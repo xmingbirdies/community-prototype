@@ -248,7 +248,11 @@ img{display:block;max-width:100%}
 .stamp{position:absolute;top:110px;z-index:3;font-size:34px;font-weight:700;letter-spacing:.04em;padding:4px 14px;border:4px solid;border-radius:10px;opacity:0}
 .stamp.f{left:24px;color:#3FD14A;transform:rotate(-14deg)}
 .stamp.s{right:24px;color:#FF5A5F;transform:rotate(14deg)}
-.sw-actions{position:absolute;left:0;right:0;bottom:calc(var(--bottom) + 22px);display:flex;justify-content:center;align-items:center;gap:20px;z-index:10}
+.sw-actions{position:absolute;left:16px;right:16px;bottom:calc(var(--bottom) + 22px);display:flex;justify-content:center;align-items:center;gap:20px;z-index:10}
+.sw-actions .swb{flex:1;max-width:164px;height:56px;border-radius:28px;font-size:17px;font-weight:600;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:transform .12s}
+.sw-actions .swb:active{transform:scale(.96)}
+.swb.skip{background:var(--surface);color:var(--red)}
+.swb.follow{background:var(--green);color:#fff}
 .circ{border-radius:50%;background:var(--surface);display:grid;place-items:center;box-shadow:0 3px 10px rgba(0,0,0,.12);transition:transform .12s}
 .circ:active{transform:scale(.92)}
 .c44{width:44px;height:44px}.c64{width:64px;height:64px}
@@ -637,10 +641,8 @@ discover(){
       ${!S.seenHint ? `<div class="hint" id="hint">Tap to watch  ·  ← Skip  ·  Follow →</div>` : ""}
     </div>
     <div class="sw-actions">
-      <button class="circ c44" aria-label="Undo" data-a="undoSwipe" ${S.skipped.length||S.lastSwipe?"":"disabled style='opacity:.4'"}>${I(ic.undo,20,2.4,"#6B6B66")}</button>
-      <button class="circ c64" aria-label="Skip" data-a="swipe" data-dir="left">${I(ic.x,30,2.6,"#E5484D")}</button>
-      <button class="circ c64" aria-label="Follow" data-a="swipe" data-dir="right">${I(ic.check,30,2.6,"#2E7D32")}</button>
-      <button class="circ c44" aria-label="Open profile" data-a="cardInfo">${I(ic.info,20,2.4,"#6B6B66")}</button>
+      <button class="swb skip" data-a="swipe" data-dir="left">Skip</button>
+      <button class="swb follow" data-a="swipe" data-dir="right">Follow</button>
     </div>`;
 },
 

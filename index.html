@@ -299,6 +299,35 @@ img{display:block;max-width:100%}
 .vprog{position:absolute;left:0;right:0;bottom:calc(var(--bottom) + 8px);height:3px;background:rgba(255,255,255,.25);z-index:4}
 .vprog i{display:block;height:100%;width:0;background:#fff}
 
+/* topics + groups */
+.label.topic{background:#EFE8FD;color:#5B34C2}
+.label.group{background:#FFEDE2;color:#A8481A}
+.dtabs{position:absolute;left:16px;right:16px;top:calc(var(--top) + 60px);z-index:25;display:flex;gap:2px;padding:3px;border-radius:100px;background:rgba(0,0,0,.06)}
+.dtabs button{flex:1;height:34px;border-radius:100px;font-weight:600;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
+.dtabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
+.dcount{min-width:18px;height:18px;padding:0 5px;border-radius:9px;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:inline-grid;place-items:center}
+.dwith .progress{top:calc(var(--top) + 108px)}
+.dwith .deck{top:calc(var(--top) + 134px)}
+.card .in .stack img{border-color:rgba(255,255,255,.9)}
+.twrap{display:flex;flex-wrap:wrap;gap:8px;padding:0 20px 16px}
+.tchip{height:38px;padding:0 14px;border-radius:19px;border:1px solid #DCDCD5;background:var(--surface);display:inline-flex;align-items:center;gap:6px;font-weight:500;font-size:14px}
+.tchip.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.gcard{flex:none;width:208px;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--surface);scroll-snap-align:start;display:flex;flex-direction:column}
+.gcover{display:block;height:100px;width:100%;background:center/cover}
+.gbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:6px;align-items:flex-start}
+.gbody .btn{align-self:stretch;margin-top:2px}
+.ehero{position:relative;height:210px;background:center/cover}
+.ehero::after{content:"";position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(0,0,0,.75))}
+.ein{position:absolute;left:20px;right:20px;bottom:16px;z-index:1;color:#fff;display:flex;flex-direction:column;gap:4px;align-items:flex-start}
+.ein .h1{color:#fff}
+.vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+.vgrid button{position:relative;aspect-ratio:9/16;border-radius:10px;background:center/cover}
+.vgrid em{position:absolute;left:6px;bottom:6px;font-style:normal;font-size:11px;font-weight:600;color:#fff;display:inline-flex;align-items:center;gap:3px;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.vctx{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 8px;border-radius:12px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+.vctx>button:first-child{display:inline-flex;align-items:center;gap:6px;color:#fff;font-weight:600;font-size:13px}
+.vctxf{height:26px;padding:0 10px;border-radius:13px;background:#fff;color:var(--ink);font-weight:600;font-size:12px}
+.vctxf.on{background:rgba(255,255,255,.25);color:#fff}
+
 /* misc */
 .placeholder{margin:16px 20px;border:1.5px dashed #CFCFC8;border-radius:16px;padding:40px 20px;text-align:center;color:var(--muted)}
 .callout{margin:0 20px 12px;padding:12px 14px;border-radius:12px;background:var(--blue-soft);font-size:13px;line-height:1.35}
@@ -318,6 +347,7 @@ img{display:block;max-width:100%}
       <li>Following a friend: unfollow keeps the friendship. Contributors unfollow with an Undo.</li>
       <li>Profile ••• has Mute, Not interested, Report and Block.</li>
       <li>Events moved to the Play tab.</li>
+      <li>Topics and groups (Interests and the Discover tabs) are a later-phase exploration, not Phase 1 scope.</li>
     </ul>
     <p class="small">On a phone, open the hosted version and use Add to Home Screen to install it.</p>
     <button id="reset" type="button">Reset prototype</button>
@@ -375,6 +405,43 @@ const PEOPLE = {
 };
 const CONTRIB = ["dana","mike","priya","ken","alana","sam"];
 const FRIENDS = ["mikey","angel","dave","sofia","joey"];
+/* Later-phase exploration: topics and public groups */
+const TOPICS = ["t_short","t_course","t_fit","t_putt","t_swing","t_budget"];
+const GROUPS = ["g_bay","g_women","g_sub90","g_dawn","g_twilight"];
+Object.assign(PEOPLE, {
+  t_short:  {name:"Short game",     kind:"topic", av:"i1", spec:"Chipping, pitching and bunker play", followers:"8.2k", posts:340, why:"Popular with golfers at your handicap", top:["dana","ken"], desc:"Drills and fixes for everything inside 100 yards."},
+  t_course: {name:"Course reviews", kind:"topic", av:"i4", spec:"Honest takes on where to play", followers:"11k", posts:520, why:"Matches courses you've played", top:["mike","sam"], desc:"Reviews, hole-by-hole tips and green-fee value."},
+  t_fit:    {name:"Golf fitness",   kind:"topic", av:"i3", spec:"Mobility, strength and warm-ups", followers:"4.6k", posts:190, why:"Trending this week", top:["priya","alana"], desc:"Short routines that help you turn, hit and recover."},
+  t_putt:   {name:"Putting",        kind:"topic", av:"i2", spec:"Lag, reads and short putts", followers:"6.9k", posts:260, why:"You average 33 putts a round", top:["dana","alana"], desc:"Speed control, green reading and the 3-footers that matter."},
+  t_swing:  {name:"Swing",          kind:"topic", av:"i1", spec:"Fixes, drills and slow motion", followers:"15k", posts:710, why:"Most followed topic", top:["alana","ken"], desc:"Simple, visual swing advice from teaching pros."},
+  t_budget: {name:"Budget golf",    kind:"topic", av:"i4", spec:"Great rounds under $60", followers:"3.1k", posts:120, why:"New this month", top:["sam","mike"], desc:"Twilight rates, hidden gems and gear deals."},
+  g_bay:    {name:"Bay Area Weekend Golfers", kind:"group", av:"i4", spec:"Public group · Bay Area", members:"1.2k", followers:"1.2k", posts:86, why:"3 friends are members", friends:["mikey","angel","dave"], desc:"Saturday tee times, carpools and open spots around the Bay."},
+  g_women:  {name:"Women Who Golf SF", kind:"group", av:"i2", spec:"Public group · San Francisco", members:"640", followers:"640", posts:42, why:"Angel and Sofia are members", friends:["angel","sofia"], desc:"Clinics, nine-hole meetups and a friendly scramble every month."},
+  g_sub90:  {name:"Sub-90 Club", kind:"group", av:"i1", spec:"Public group · Online", members:"3.4k", followers:"3.4k", posts:210, why:"For golfers around your handicap", friends:["joey"], desc:"Share rounds, swap tips and chase that first 89."},
+  g_dawn:   {name:"Dawn Patrol Golf", kind:"group", av:"i3", spec:"Public group · Peninsula", members:"410", followers:"410", posts:31, why:"Plays courses you've played", desc:"First tee times only. Done by 9."},
+  g_twilight:{name:"Twilight Nine", kind:"group", av:"i2", spec:"Public group · South Bay", members:"280", followers:"280", posts:19, why:"New group near you", desc:"After-work nines, all levels welcome."}
+});
+Object.assign(CLIPS, {
+  t_short:  [["v1","Three-ball drill for a cleaner strike on short pitches.","0:42",2480,41,"dana"],["v4","State am practice round: how I chip on fast greens.","1:12",380,6,"ken"],["v5","Lag putting ladder: 20, 30, 40 feet.","0:55",870,12,"dana"]],
+  t_course: [["v2","Pasatiempo 16 from the tee.","1:04",1320,18,"mike"],["v6","Best golf under $60 in San Diego, ranked.","1:20",260,9,"sam"],["v3","A $45 twilight round that plays like a top-100 course.","0:47",510,7,"mike"]],
+  t_fit:    [["v3","5-minute hip mobility routine before your first tee.","0:59",960,12,"priya"],["v1","Three stretches for a fuller turn.","0:44",720,8,"priya"],["v2","Slow motion: hips lead, hands follow.","0:22",2900,40,"alana"]],
+  t_putt:   [["v5","Lag putting ladder: 20, 30, 40 feet.","0:55",870,12,"dana"],["v3","Read the break from below the hole.","0:36",1100,20,"alana"],["v4","The gate drill for 3-footers.","0:29",640,9,"dana"]],
+  t_swing:  [["v5","One-move fix for an early release.","0:33",4100,88,"alana"],["v2","Tournament week routine, day by day.","0:51",290,4,"ken"],["v3","New golfers: the only grip check you need.","0:40",3300,61,"alana"]],
+  t_budget: [["v6","Best golf under $60 in San Diego, ranked.","1:20",260,9,"sam"],["v5","Twilight rates that are actually worth it.","0:45",180,4,"sam"],["v3","A $45 twilight round that plays like a top-100 course.","0:47",510,7,"mike"]],
+  g_bay:    [["v2","Open spots Saturday at Half Moon Bay, 7:40.","0:24",210,14,"mike"],["v6","Our monthly scramble recap.","0:58",340,22,"sam"],["v1","Who's in for Pasatiempo next month?","0:31",160,30,"mike"]],
+  g_women:  [["v3","Clinic recap: bunker basics.","0:46",190,11,"alana"],["v5","Nine-hole meetup at Presidio.","0:38",150,9,"priya"],["v4","Wedge warm-up we did together.","0:28",120,6,"priya"]],
+  g_sub90:  [["v1","How I finally broke 90: three habits.","1:02",880,64,"ken"],["v4","Course management for bogey golfers.","0:49",610,33,"dana"],["v5","Two-putt every green: the lag drill.","0:55",540,21,"dana"]],
+  g_dawn:   [["v6","6:30 tee time, fog and all.","0:27",90,5,"sam"],["v2","Sunrise over 16.","0:20",140,7,"mike"],["v3","Quick warm-up before the first tee.","0:40",80,3,"priya"]],
+  g_twilight:[["v5","Last light on the back nine.","0:25",70,4,"sam"],["v1","Putting for the skins.","0:33",60,6,"ken"],["v6","Nine holes, 90 minutes.","0:30",50,2,"mike"]]
+});
+const DECKS = { people: CONTRIB, topics: TOPICS, groups: GROUPS };
+const DNAME = { people:"People", topics:"Topics", groups:"Groups" };
+const isGroup = (id) => PEOPLE[id].kind === "group";
+const isEnt = (id) => ["topic","group"].includes(PEOPLE[id].kind);
+const verb = (id) => isGroup(id) ? "Join" : "Follow";
+const verbed = (id) => isGroup(id) ? "Joined" : "Following";
+const onMsg = (id) => isGroup(id) ? `You joined ${PEOPLE[id].name}` : `You're following ${PEOPLE[id].name}`;
+const offMsg = (id) => isGroup(id) ? `You left ${PEOPLE[id].name}` : `Unfollowed ${PEOPLE[id].name}`;
 const FEATURED = [
   {by:"dana",  meta:"2h", loc:"Torrey Pines", img:"i1", i:0, text:"Three-ball drill for a cleaner strike on short pitches. Try 10 reps before your next round.", likes:248, comments:41},
   {by:"mike",  meta:"1d", loc:"Pasatiempo",   img:"i4", i:0, text:"Course review: Pasatiempo's 16th is the best par 4 nobody talks about.", likes:132, comments:18},
@@ -384,9 +451,10 @@ const FEATURED = [
 const DEFAULT = () => ({
   following: ["dana","mikey","angel","dave","sofia","joey"],
   muted: [], blocked: [], notInterested: [], skipped: [],
-  liked: [], deckPos: 0, seenHint: false, eventsHint: true, moduleHidden: false, view: "list"
+  liked: [], pos: {people:0, topics:0, groups:0}, dtype: "people", seenHint: false, eventsHint: true, moduleHidden: false, view: "list"
 });
 let S = load();
+if(!S.pos || typeof S.pos !== "object") S.pos = {people: S.deckPos || 0, topics: 0, groups: 0};
 function load(){ try{ const v = JSON.parse(localStorage.getItem("cp1-state")); if(v && v.following) return Object.assign(DEFAULT(), v); }catch(e){} return DEFAULT(); }
 function save(){ try{ localStorage.setItem("cp1-state", JSON.stringify(S)); }catch(e){} }
 const isF = (id) => S.following.includes(id);
@@ -427,7 +495,7 @@ const ic = {
 const plural = (n,w) => `${n} ${w}${n===1?"":"s"}`;
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const av = (id, s=40) => `<img class="av" src="${IMG[PEOPLE[id].av]}" width="${s}" height="${s}" alt="">`;
-const label = (id) => PEOPLE[id].kind==="contributor" ? `<span class="label">Contributor</span>` : `<span class="label friend">Friend</span>`;
+const label = (id) => ({contributor:`<span class="label">Contributor</span>`, friend:`<span class="label friend">Friend</span>`, topic:`<span class="label topic">Topic</span>`, group:`<span class="label group">Group</span>`})[PEOPLE[id].kind] || "";
 
 /* ---------- navigation ---------- */
 const app = document.getElementById("app");
@@ -479,8 +547,8 @@ const fan = () => `<div class="fan" aria-hidden="true">
   <span style="left:13px;transform:rotate(-10deg);background-image:url(${IMG.i4})"><i style="background-image:url(${IMG.a1})"></i></span>
   <span style="left:45px;background-image:url(${IMG.i1})"><i style="background-image:url(${IMG.a2})"></i></span></div>`;
 const followBtn = (id, cls="small") => isF(id)
-  ? `<button class="btn ghost ${cls}" data-a="${isFriend(id)?"askUnfollow":"unfollow"}" data-id="${id}">Following</button>`
-  : `<button class="btn primary ${cls}" data-a="follow" data-id="${id}">Follow</button>`;
+  ? `<button class="btn ghost ${cls}" data-a="${isFriend(id)?"askUnfollow":"unfollow"}" data-id="${id}">${verbed(id)}</button>`
+  : `<button class="btn primary ${cls}" data-a="follow" data-id="${id}">${verb(id)}</button>`;
 
 function postHTML(p, source){
   const P = PEOPLE[p.by]; const key = p.by + p.img; const liked = S.liked.includes(key);
@@ -512,7 +580,7 @@ home(){
     <div class="actions"><button data-a="like" data-k="mikeyround" class="${S.liked.includes("mikeyround")?"liked":""}">${I(ic.like,18)} ${S.liked.includes("mikeyround")?"Liked":"Like"}</button><button data-a="toast" data-msg="Comments open the existing post detail">${I(ic.comment,18)} Comment</button><button data-a="toast" data-msg="Messages aren't part of this prototype">${I(ic.msg,18)} Message</button></div></article>`;
   const module = showModule ? `<section class="blk pad" aria-label="Discover contributors">
       <div class="between"><div><div class="h2">Discover contributors</div><div class="xs">Coaches and golfers approved by 18Birdies</div></div><button aria-label="Hide" data-a="hideModule">${I(ic.x,20)}</button></div>
-      <div class="row" style="margin-top:12px;gap:16px">${fan()}<div style="display:flex;flex-direction:column;gap:10px"><div class="small" style="color:var(--ink)">${remainingDeck().length} to swipe through. Right to follow, left to skip.</div><button class="btn primary" data-a="discover">${I(ic.swipe,18,2)} Start swiping</button></div></div></section>` : "";
+      <div class="row" style="margin-top:12px;gap:16px">${fan()}<div style="display:flex;flex-direction:column;gap:10px"><div class="small" style="color:var(--ink)">${remainingDeck().length} to swipe through. Right to follow, left to skip.</div><button class="btn primary" data-a="discover" data-t="people">${I(ic.swipe,18,2)} Start swiping</button></div></div></section>` : "";
   const angel = { by:"angel", meta:"1d", loc:"Half Moon Bay", img:"i2", text:"Windy one today. Bogey free on the back nine though.", likes:9, comments:2 };
   return `${homeToolbar()}
   <div class="scroll">
@@ -528,7 +596,7 @@ home(){
     <section class="blk empty">${fan().replace('class="fan"','class="fan" style="margin:0 auto"')}
       <div class="h2" style="margin-top:6px">You're all caught up</div>
       <p class="small" style="max-width:280px;margin:8px auto 14px">You've seen every post from your friends. Want to find a few contributors to follow?</p>
-      <button class="btn primary" data-a="discover">${I(ic.swipe,18,2)} Discover contributors</button></section>
+      <button class="btn primary" data-a="discover" data-t="people">${I(ic.swipe,18,2)} Discover contributors</button></section>
   </div>
   <button class="fab" data-a="toast" data-msg="Posting isn't part of this prototype">Create</button>
   ${tabbar()}`;
@@ -544,7 +612,7 @@ interests(){
         <div class="sh-title">Find people worth following</div>
         <div class="sh-sub">${left.length ? `${plural(left.length,"contributor")} picked for you. Swipe right to follow, left to skip.` : "You've seen everyone for now. The full list is always here."}</div>
         ${left.length ? `<div class="sh-bars">${left.map((_,i)=>`<i class="${i===0?"on":""}"></i>`).join("")}</div>
-        <button class="btn sh-btn" data-a="discover">${I(ic.swipe,18,2)} Start swiping</button>` : ""}
+        <button class="btn sh-btn" data-a="discover" data-t="people">${I(ic.swipe,18,2)} Start swiping</button>` : ""}
         <button class="sh-link" data-a="go" data-to="all">See all contributors ${I(ic.chev,14,2)}</button>
       </div>
       <div class="bigfan" aria-hidden="true">
@@ -558,6 +626,17 @@ interests(){
   <div class="scroll sub">
     ${feat[0] ? postHTML(feat[0], why(feat[0])) : ""}
     ${hero}
+    <section class="blk" style="padding-top:16px">
+      <div class="between" style="padding:0 20px 10px"><div><div class="h2">Topics to follow</div><div class="xs">Get more of what you care about</div></div><button class="link" data-a="discover" data-t="topics">Swipe</button></div>
+      <div class="twrap">${TOPICS.map(id => `<button class="tchip ${isF(id)?"on":""}" data-a="ftoggle" data-id="${id}">${I(isF(id)?ic.check:ic.plus,15,2.4)} ${esc(PEOPLE[id].name)}</button>`).join("")}</div>
+    </section>
+    <section class="blk" style="padding-top:16px">
+      <div class="between" style="padding:0 20px 10px"><div><div class="h2">Groups to join</div><div class="xs">Public groups. Anyone can join.</div></div><button class="link" data-a="discover" data-t="groups">Swipe</button></div>
+      <div class="car">${GROUPS.map(id => { const G = PEOPLE[id]; return `<div class="gcard"><button class="gcover" data-a="profile" data-id="${id}" style="background-image:url(${VID(CLIPS[id][0][0]).poster})" aria-label="Open ${esc(G.name)}"></button>
+        <div class="gbody"><button class="h3" style="text-align:left" data-a="profile" data-id="${id}">${esc(G.name)}</button><span class="xs">${G.members} members · ${esc(G.spec.replace("Public group · ",""))}</span>
+        ${G.friends ? `<span class="row" style="gap:6px"><span class="stack">${G.friends.slice(0,3).map(f=>av(f,22)).join("")}</span><span class="xs">${G.friends.length} ${G.friends.length>1?"friends":"friend"}</span></span>` : `<span class="xs">${esc(G.why)}</span>`}
+        ${followBtn(id,"small")}</div></div>`; }).join("")}</div>
+    </section>
     ${feat.slice(1).map(p => postHTML(p, why(p))).join("")}
     <p class="small" style="text-align:center;padding:12px 20px 24px">That's everything featured for now.</p>
   </div>`;
@@ -568,7 +647,7 @@ all(){
   return `${subToolbar("Contributors")}
   <div class="scroll sub">
     <section class="blk" style="padding-top:4px">
-      <div class="seg" role="tablist"><button class="on" role="tab" aria-selected="true">${I(ic.list,16,2)} List</button><button role="tab" aria-selected="false" data-a="discover">${I(ic.cards,16,2)} Swipe</button></div>
+      <div class="seg" role="tablist"><button class="on" role="tab" aria-selected="true">${I(ic.list,16,2)} List</button><button role="tab" aria-selected="false" data-a="discover" data-t="people">${I(ic.cards,16,2)} Swipe</button></div>
       <div class="xs" style="padding:4px 20px 0">${pool.length} approved contributors</div>
       ${pool.map(id => { const P=PEOPLE[id]; return `<div class="lrow"><button data-a="profile" data-id="${id}">${av(id,48)}</button><button class="grow" style="text-align:left" data-a="profile" data-id="${id}"><span class="nm">${esc(P.name)} <span class="label">Contributor</span></span><span class="xs">${esc(P.spec)}<br>${P.followers} followers</span></button>${followBtn(id)}</div>`; }).join("")}
     </section>
@@ -576,15 +655,15 @@ all(){
   </div>`;
 },
 
-friends(){ return SCREENS.following({filter:"friends", title:"Friends"}); },
+friends(p){ return SCREENS.following(Object.assign({filter:"friends", title:"Friends"}, p)); },
 
 following(p){
   const filter = p.filter || "all";
   return `${subToolbar(p.title || "Following")}
   <div class="scroll sub">
     <section class="blk" style="padding-top:4px">
-      <label class="search">${I(ic.search,18,2,"var(--muted)")}<input id="q" type="search" placeholder="Search people you follow" aria-label="Search people you follow" autocomplete="off"></label>
-      <div class="chips">${[["all","All"],["friends","Friends"],["contributors","Contributors"]].map(([k,l]) => `<button class="chip ${filter===k?"on":""}" data-a="filter" data-f="${k}">${l} ${countFor(k)}</button>`).join("")}</div>
+      <label class="search">${I(ic.search,18,2,"var(--muted)")}<input id="q" type="search" placeholder="Search people, topics and groups" aria-label="Search what you follow" autocomplete="off"></label>
+      <div class="chips">${[["all","All"],["friends","Friends"],["contributors","Contributors"],["topics","Topics"],["groups","Groups"]].map(([k,l]) => `<button class="chip ${filter===k?"on":""}" data-a="filter" data-f="${k}">${l} ${countFor(k)}</button>`).join("")}</div>
       <div id="list">${listRows(filter, p.q)}</div>
     </section>
     <p class="small" style="padding:8px 20px 24px">Unfollowing a friend keeps the friendship. You just stop seeing their posts in Friends.</p>
@@ -594,6 +673,19 @@ following(p){
 profile(p){
   const id = p.id, P = PEOPLE[id], c = P.kind === "contributor";
   if(hidden(id)) return `${subToolbar("")}<div class="scroll sub"><div class="empty" style="margin-top:80px">${I(ic.block,32,1.8,"var(--muted)")}<div class="h2" style="margin-top:10px">You can't view this</div><p class="small">You and this account can't see or interact with each other.</p><button class="btn ghost" data-a="unblock" data-id="${id}">Unblock</button></div></div>`;
+  if(isEnt(id)){ const C = CLIPS[id], g = isGroup(id);
+    return `${subToolbar(g ? "Group" : "Topic")}
+  <div class="scroll sub">
+    <section class="blk"><div class="ehero" style="background-image:url(${VID(C[0][0]).poster})"><div class="ein">${label(id)}<div class="h1">${esc(P.name)}</div><div style="font-size:14px;opacity:.95">${esc(P.spec)}</div></div></div>
+      <div class="pad" style="display:flex;flex-direction:column;gap:12px">
+        <div class="between"><div class="small">${g ? `${P.members} members` : `${P.followers} followers`} · ${P.posts} posts this week</div>${followBtn(id,"")}</div>
+        <p class="body" style="margin:0">${esc(P.desc)}</p>
+        ${P.friends ? `<div class="row" style="gap:8px"><span class="stack">${P.friends.map(f=>av(f,28)).join("")}</span><span class="xs">${P.friends.map(f=>esc(PEOPLE[f].name.split(" ")[0])).join(", ")} ${P.friends.length>1?"are":"is"} in this group</span></div>` : ""}
+        ${P.top ? `<div><div class="xs">Top contributors</div><div class="row" style="gap:14px;margin-top:8px;flex-wrap:wrap">${P.top.map(c=>`<button class="row" style="gap:6px" data-a="profile" data-id="${c}">${av(c,28)}<span class="h3" style="font-size:14px">${esc(PEOPLE[c].name)}</span></button>`).join("")}</div></div>` : ""}
+      </div></section>
+    <section class="blk pad"><div class="h2">Videos</div><div class="vgrid">${C.map((c,k)=>`<button data-a="watch" data-id="${id}" data-i="${k}" style="background-image:url(${VID(c[0]).poster})" aria-label="Watch: ${esc(c[1])}"><em>${I(ic.play,10)} ${c[2]}</em></button>`).join("")}</div></section>
+    ${g ? `<p class="small" style="padding:4px 20px 24px">Public group. Members' posts in the group are visible to everyone. Joining never shares your private rounds.</p>` : `<p class="small" style="padding:4px 20px 24px">Following a topic adds its top posts to Interests. It never changes who can see your posts.</p>`}
+  </div>`; }
   const posts = FEATURED.filter(x => x.by === id);
   return `${subToolbar("", `<button class="gbtn glass" aria-label="More" data-a="menu" data-id="${id}">${I(ic.more,24,2)}</button>`)}
   <div class="scroll sub">
@@ -610,61 +702,73 @@ profile(p){
   </div>`;
 },
 
-discover(){
-  const deck = remainingDeck();
-  const pos = S.deckPos, total = CONTRIB.length;
-  const bars = `<div class="progress"><div class="bars">${CONTRIB.map((_,i)=>`<i class="${i<Math.min(pos,total)?"on":""}"></i>`).join("")}</div><div class="xs" style="margin-top:6px">${Math.min(pos+1,total)} of ${total} · Contributors approved by 18Birdies</div></div>`;
+discover(p){
+  if(p && p.t){ S.dtype = p.t; p.t = null; save(); }
+  const t = S.dtype || "people", ALL = DECKS[t], deck = remainingDeck(t);
+  const pos = S.pos[t] || 0, total = ALL.length;
+  const tabs = `<div class="dtabs" role="tablist">${Object.keys(DECKS).map(k => `<button role="tab" aria-selected="${k===t}" class="${k===t?"on":""}" data-a="dtype" data-t="${k}">${DNAME[k]}${remainingDeck(k).length?` <span class="dcount">${remainingDeck(k).length}</span>`:""}</button>`).join("")}</div>`;
+  const what = {people:"Contributors approved by 18Birdies", topics:"Topics picked for you", groups:"Public groups near you"}[t];
+  const bars = `<div class="progress"><div class="bars">${ALL.map((_,i)=>`<i class="${i<Math.min(pos,total)?"on":""}"></i>`).join("")}</div><div class="xs" style="margin-top:6px">${Math.min(pos+1,total)} of ${total} · ${what}</div></div>`;
   if(!deck.length){
-    const followed = CONTRIB.filter(isF);
-    return `${subToolbar("Discover")}
-    <div class="scroll sub"><section class="blk empty" style="margin:16px;border-radius:24px;padding:32px 24px">
-      <span class="stack" style="justify-content:center">${(followed.length?followed:CONTRIB).slice(0,3).map(id=>av(id,64)).join("")}</span>
+    const done = ALL.filter(isF), next = Object.keys(DECKS).find(k => k !== t && remainingDeck(k).length);
+    const noun = {people:"contributors", topics:"topics", groups:"groups"}[t];
+    return `${subToolbar("Discover")}<div class="dwith">${tabs}
+    <div class="scroll sub" style="padding-top:calc(var(--top) + 110px)"><section class="blk empty" style="margin:0 16px;border-radius:24px;padding:32px 24px">
+      <span class="stack" style="justify-content:center">${(done.length?done:ALL).slice(0,3).map(id=>av(id,64)).join("")}</span>
       <div class="h1" style="margin-top:14px">You're all caught up</div>
-      <p class="small" style="margin:8px auto 18px;max-width:290px">You followed ${followed.length} of ${total} contributors. Their public posts will show up in your Friends feed.</p>
-      <div style="display:flex;flex-direction:column;gap:10px"><button class="btn primary big" data-a="go" data-to="all">Browse all contributors</button><button class="btn ghost big" data-a="go" data-to="following">Manage following</button><button class="link" data-a="restartDeck" style="margin-top:6px">Start over</button></div>
-      <p class="xs" style="margin-top:14px">Skipped contributors may show up again later.</p></section></div>`;
+      <p class="small" style="margin:8px auto 18px;max-width:290px">You ${t==="groups"?"joined":"followed"} ${done.length} of ${total} ${noun}.${t==="people"?" Their public posts will show up in your Friends feed.":""}</p>
+      <div style="display:flex;flex-direction:column;gap:10px">${next ? `<button class="btn primary big" data-a="dtype" data-t="${next}">Swipe ${DNAME[next].toLowerCase()}</button>` : ""}<button class="btn ghost big" data-a="go" data-to="following">Manage following</button><button class="link" data-a="restartDeck" style="margin-top:6px">Start over</button></div>
+      <p class="xs" style="margin-top:14px">Skipped ${noun} may show up again later.</p></section></div></div>`;
   }
-  const card = (id, cls) => { const P = PEOPLE[id], C = CLIPS[id], v0 = VID(C[0][0]); return `<div class="card ${cls}" data-id="${id}" style="background-image:url(${v0.poster})">
+  const card = (id, cls) => { const P = PEOPLE[id], C = CLIPS[id], v0 = VID(C[0][0]), ent = isEnt(id);
+    const stats = P.kind==="group" ? `${P.members} members · ${P.posts} posts this week` : P.kind==="topic" ? `${P.followers} followers · ${P.posts} posts this week` : `${P.followers} followers · ${P.posts} public posts`;
+    const extra = P.friends ? `<div class="row" style="gap:8px;font-size:13px"><span class="stack">${P.friends.slice(0,3).map(f=>`<img class="av" src="${IMG[PEOPLE[f].av]}" width="24" height="24" alt="">`).join("")}</span>${esc(P.friends.map(f=>PEOPLE[f].name.split(" ")[0]).join(", "))} ${P.friends.length>1?"are":"is"} in this group</div>`
+      : P.top ? `<div class="row" style="gap:8px;font-size:13px"><span class="stack">${P.top.map(c=>`<img class="av" src="${IMG[PEOPLE[c].av]}" width="24" height="24" alt="">`).join("")}</span>Top: ${esc(P.top.map(c=>PEOPLE[c].name).join(", "))}</div>` : "";
+    return `<div class="card ${cls}" data-id="${id}" style="background-image:url(${v0.poster})">
       ${cls==="top" ? `<video class="cvid" src="${v0.src}" poster="${v0.poster}" muted loop playsinline autoplay preload="auto"></video>` : ""}
       <div class="bars">${C.map((_,k)=>`<i class="${k===0?"on":""}"></i>`).join("")}</div>
       <span class="vbadge cvb">${I(ic.play,12)} ${C[0][2]}</span>
       <span class="why whyc">${I(ic.star,14,2.2)} ${esc(P.why)}</span>
-      ${cls==="top" ? `<span class="stamp f">FOLLOW</span><span class="stamp s">SKIP</span>` : ""}
-      <div class="in"><div class="row" style="gap:10px"><img class="av" src="${IMG[P.av]}" width="44" height="44" alt="" style="border:2px solid #fff">
-        <div><div class="row" style="gap:6px"><span style="font-size:24px;font-weight:600">${esc(P.name)}</span><span class="label">Contributor</span></div><div style="font-size:14px;opacity:.95">${esc(P.spec)}</div></div></div>
+      ${cls==="top" ? `<span class="stamp f">${verb(id).toUpperCase()}</span><span class="stamp s">SKIP</span>` : ""}
+      <div class="in"><div class="row" style="gap:10px"><img class="av" src="${IMG[P.av]}" width="44" height="44" alt="" style="border:2px solid #fff;${ent?"border-radius:12px":""}">
+        <div style="min-width:0"><div class="row" style="gap:6px;flex-wrap:wrap"><span style="font-size:${P.name.length>18?20:24}px;font-weight:600;line-height:1.15">${esc(P.name)}</span>${label(id)}</div><div style="font-size:14px;opacity:.95">${esc(P.spec)}</div></div></div>
+        ${extra}
         <div class="thumbs">${C.map((c,k)=>`<span data-i="${k}" style="background-image:url(${VID(c[0]).poster})"><em>${I(ic.play,10)} ${c[2]}</em></span>`).join("")}</div>
-        <div class="row" style="gap:6px;font-size:12px">${P.followers} followers · ${P.posts} public posts · Tap to watch</div></div></div>`; };
-  return `${subToolbar("Discover", `<button class="gbtn glass" aria-label="Open profile" data-a="cardInfo">${I(ic.info,22,2)}</button>`)}
+        <div class="row" style="gap:6px;font-size:12px">${stats} · Tap to watch</div></div></div>`; };
+  const top = deck[0];
+  return `${subToolbar("Discover", `<button class="gbtn glass" aria-label="Open details" data-a="cardInfo">${I(ic.info,22,2)}</button>`)}
+    <div class="dwith">${tabs}
     ${bars}
     <div class="deck" id="deck">
-      ${deck[2] ? card(deck[2],"under2") : ""}${deck[1] ? card(deck[1],"under") : ""}${card(deck[0],"top")}
-      ${!S.seenHint ? `<div class="hint" id="hint">Tap to watch  ·  ← Skip  ·  Follow →</div>` : ""}
-    </div>
+      ${deck[2] ? card(deck[2],"under2") : ""}${deck[1] ? card(deck[1],"under") : ""}${card(top,"top")}
+      ${!S.seenHint ? `<div class="hint" id="hint">Tap to watch  ·  ← Skip  ·  ${verb(top)} →</div>` : ""}
+    </div></div>
     <div class="sw-actions">
       <button class="swb skip" data-a="swipe" data-dir="left">Skip</button>
-      <button class="swb follow" data-a="swipe" data-dir="right">Follow</button>
+      <button class="swb follow" data-a="swipe" data-dir="right">${verb(top)}</button>
     </div>`;
 },
 
 watch(p){
-  const ids = [p.id, ...remainingDeck().filter(x => x !== p.id)].filter(id => !hidden(id));
+  const kind = PEOPLE[p.id].kind, t = p.t || (kind === "contributor" ? "people" : (S.dtype !== "people" && DECKS[S.dtype].includes(p.id) ? S.dtype : null));
+  const ids = (t ? [p.id, ...remainingDeck(t).filter(x => x !== p.id)] : [p.id]).filter(id => !hidden(id));
   const slides = []; ids.forEach(id => CLIPS[id].forEach((c,k) => slides.push({id,k,c})));
-  const slide = ({id,k,c}, n) => { const P = PEOPLE[id], v = VID(c[0]), key = `v:${id}:${k}`, liked = S.liked.includes(key);
+  const slide = ({id,k,c}, n) => { const ctx = PEOPLE[id], au = c[5] || id, P = PEOPLE[au], v = VID(c[0]), key = `v:${id}:${k}`, liked = S.liked.includes(key);
     return `<section class="vs" data-id="${id}" data-k="${k}" data-n="${n}">
       <video src="${v.src}" poster="${v.poster}" muted loop playsinline preload="${n<3?"auto":"metadata"}"></video>
       <div class="vshade"></div>
       <div class="vplay" aria-hidden="true">${I(ic.play,64)}</div>
       <div class="vrail">
-        <div class="vava"><button data-a="profile" data-id="${id}" aria-label="Open ${esc(P.name)}">${av(id,46)}</button><button class="vplus vf" data-a="vfollow" data-id="${id}" aria-label="Follow ${esc(P.name)}" ${isF(id)?"hidden":""}>${I(ic.plus,14,3)}</button></div>
+        <div class="vava"><button data-a="profile" data-id="${au}" aria-label="Open ${esc(P.name)}">${av(au,46)}</button><button class="vplus vf" data-a="vfollow" data-id="${au}" aria-label="Follow ${esc(P.name)}" ${isF(au)?"hidden":""}>${I(ic.plus,14,3)}</button></div>
         <button data-a="vlike" data-k="${key}" data-base="${c[3]}" class="${liked?"on":""}" aria-label="Like">${I(ic.heart,32,2)}<span>${fmtN(c[3]+(liked?1:0))}</span></button>
         <button data-a="toast" data-msg="Comments open the existing post detail" aria-label="Comments">${I(ic.comment,30,2)}<span>${c[4]}</span></button>
         <button data-a="toast" data-msg="Share sheet isn't part of this prototype" aria-label="Share">${I(ic.share,30,2)}<span>Share</span></button>
       </div>
       <div class="vinfo">
-        <span class="why" style="align-self:flex-start">${I(ic.star,14,2.2)} ${esc(P.why)}</span>
-        <div class="row" style="gap:8px;flex-wrap:wrap"><button class="vname" data-a="profile" data-id="${id}">${esc(P.name)}</button><span class="label">Contributor</span><button class="vfbtn vf ${isF(id)?"on":""}" data-a="vfollow" data-id="${id}">${isF(id)?"Following":"Follow"}</button></div>
+        ${isEnt(id) ? `<span class="vctx"><button data-a="profile" data-id="${id}">${label(id)} ${esc(ctx.name)}</button><button class="vf vctxf ${isF(id)?"on":""}" data-a="vfollow" data-id="${id}">${isF(id)?verbed(id):verb(id)}</button></span>` : `<span class="why" style="align-self:flex-start">${I(ic.star,14,2.2)} ${esc(P.why)}</span>`}
+        <div class="row" style="gap:8px;flex-wrap:wrap"><button class="vname" data-a="profile" data-id="${au}">${esc(P.name)}</button>${label(au)}<button class="vfbtn vf ${isF(au)?"on":""}" data-a="vfollow" data-id="${au}">${isF(au)?"Following":"Follow"}</button></div>
         <div class="vcap">${esc(c[1])}</div>
-        <div class="vmeta">${k+1} of ${CLIPS[id].length} from ${esc(P.name.split(" ")[0])} · ${c[2]}${n===0?" · Swipe up for more":""}</div>
+        <div class="vmeta">${k+1} of ${CLIPS[id].length} ${isEnt(id) ? `in ${esc(ctx.name)}` : `from ${esc(P.name.split(" ")[0])}`} · ${c[2]}${n===0?" · Swipe up for more":""}</div>
       </div>
       <div class="vprog"><i></i></div>
     </section>`; };
@@ -709,28 +813,30 @@ placeholder(p){
 };
 
 /* ---------- lists ---------- */
-function countFor(k){ const ids = S.following.filter(id => !hidden(id)); return k==="all" ? ids.length : k==="friends" ? ids.filter(isFriend).length : ids.filter(id=>!isFriend(id)).length; }
+const KMAP = { friends:"friend", contributors:"contributor", topics:"topic", groups:"group" };
+function countFor(k){ const ids = S.following.filter(id => !hidden(id)); return k==="all" ? ids.length : ids.filter(id => PEOPLE[id].kind === KMAP[k]).length; }
 function listRows(filter, q){
   let ids = S.following.filter(id => !hidden(id));
-  if(filter==="friends") ids = ids.filter(isFriend); if(filter==="contributors") ids = ids.filter(id=>!isFriend(id));
+  if(filter !== "all") ids = ids.filter(id => PEOPLE[id].kind === KMAP[filter]);
   if(q) ids = ids.filter(id => PEOPLE[id].name.toLowerCase().includes(q.toLowerCase()));
-  if(!ids.length) return `<div class="empty"><p class="small">${q?"No one matches that search.":"You're not following anyone here yet."}</p>${filter!=="friends"?`<button class="btn primary" data-a="discover">${I(ic.swipe,18,2)} Discover contributors</button>`:""}</div>`;
-  return ids.map(id => { const P = PEOPLE[id]; return `<div class="lrow"><button data-a="profile" data-id="${id}">${av(id,44)}</button>
+  if(!ids.length) return `<div class="empty"><p class="small">${q?"No one matches that search.":"You're not following anyone here yet."}</p>${filter!=="friends"?`<button class="btn primary" data-a="discover" data-t="${({topics:"topics",groups:"groups"})[filter]||"people"}">${I(ic.swipe,18,2)} Discover ${({topics:"topics",groups:"groups"})[filter]||"contributors"}</button>`:""}</div>`;
+  return ids.map(id => { const P = PEOPLE[id]; return `<div class="lrow"><button data-a="profile" data-id="${id}">${isEnt(id)?av(id,44).replace('class="av"','class="av" style="border-radius:12px"'):av(id,44)}</button>
     <button class="grow" style="text-align:left" data-a="profile" data-id="${id}"><span class="nm">${esc(P.name)} ${label(id)} ${S.muted.includes(id)?'<span class="label friend">Muted</span>':""}</span><span class="xs">${esc(P.spec)}</span></button>
     ${followBtn(id)}</div>`; }).join("");
 }
 function refreshList(el, p){ const l = el.querySelector("#list"); if(l) l.innerHTML = listRows(p.filter||"all", p.q); }
 
 /* ---------- deck ---------- */
-function remainingDeck(){ return CONTRIB.slice(S.deckPos).filter(id => !isF(id) && !hidden(id) && !S.notInterested.includes(id)); }
+function remainingDeck(t="people"){ return DECKS[t].slice(S.pos[t]||0).filter(id => !isF(id) && !hidden(id) && !S.notInterested.includes(id)); }
 function advance(id, dir){
-  S.lastSwipe = {id, dir, pos:S.deckPos};
-  S.deckPos = CONTRIB.indexOf(id) + 1;
-  if(dir==="right"){ setFollow(id, true); toast(`You're following ${PEOPLE[id].name}`, "Undo", () => undoSwipe()); }
+  const t = S.dtype || "people";
+  S.lastSwipe = {id, dir, t, pos:S.pos[t]||0};
+  S.pos[t] = DECKS[t].indexOf(id) + 1;
+  if(dir==="right"){ setFollow(id, true); toast(onMsg(id), "Undo", () => undoSwipe()); }
   else { S.skipped.push(id); }
   S.seenHint = true; save();
 }
-function undoSwipe(){ const l = S.lastSwipe; if(!l) return; if(l.dir==="right") setFollow(l.id,false); else S.skipped = S.skipped.filter(x=>x!==l.id); S.deckPos = l.pos; S.lastSwipe = null; save(); hideToast(); refresh(); }
+function undoSwipe(){ const l = S.lastSwipe; if(!l) return; if(l.dir==="right") setFollow(l.id,false); else S.skipped = S.skipped.filter(x=>x!==l.id); S.pos[l.t||"people"] = l.pos; S.lastSwipe = null; save(); hideToast(); refresh(); }
 function setupWatch(el, p){
   const feed = el.querySelector("#vfeed"); if(!feed) return;
   const slides = [...feed.querySelectorAll(".vs")];
@@ -752,7 +858,7 @@ function setupWatch(el, p){
 function updV(id){
   app.querySelectorAll(`.vf[data-id="${id}"]`).forEach(b => {
     if(b.classList.contains("vplus")) b.hidden = isF(id);
-    else { b.classList.toggle("on", isF(id)); b.textContent = isF(id) ? "Following" : "Follow"; }
+    else { b.classList.toggle("on", isF(id)); b.textContent = isF(id) ? verbed(id) : verb(id); }
   });
 }
 function setupDeck(el){
@@ -794,11 +900,13 @@ const A = {
   tab: (d) => goTab(d.t),
   go: (d) => push(d.to),
   profile: (d) => { closeSheet(); push("profile",{id:d.id}); },
-  discover: () => push("discover"),
+  discover: (d) => push("discover", {t: d && d.t ? d.t : null}),
   toast: (d) => toast(d.msg),
   like: (d) => { S.liked = S.liked.includes(d.k) ? S.liked.filter(x=>x!==d.k) : [...S.liked, d.k]; save(); refresh(); },
-  follow: (d) => { setFollow(d.id,true); toast(`You're following ${PEOPLE[d.id].name}`); refresh(); },
-  unfollow: (d) => { setFollow(d.id,false); refresh(); toast(`Unfollowed ${PEOPLE[d.id].name}`, "Undo", () => { setFollow(d.id,true); refresh(); }); },
+  follow: (d) => { setFollow(d.id,true); toast(onMsg(d.id)); refresh(); },
+  unfollow: (d) => { setFollow(d.id,false); refresh(); toast(offMsg(d.id), "Undo", () => { setFollow(d.id,true); refresh(); }); },
+  ftoggle: (d) => { const on = !isF(d.id); setFollow(d.id,on); refresh(); toast(on ? onMsg(d.id) : offMsg(d.id), "Undo", () => { setFollow(d.id,!on); refresh(); }); },
+  dtype: (d) => { S.dtype = d.t; save(); refresh(); },
   askUnfollow: (d) => { const P = PEOPLE[d.id]; sheet(`<div style="text-align:center;padding:4px 24px 14px">${av(d.id,56)}<div class="h2" style="margin-top:10px">Unfollow ${esc(P.name)}?</div><p class="small" style="margin:8px 0 0">You'll stay friends. ${esc(P.name.split(" ")[0])}'s posts won't show in your Friends feed, and you can follow again anytime.</p></div>
       <div style="display:flex;flex-direction:column;gap:10px;padding:0 20px"><button class="btn big" style="background:#FDECEC;color:var(--red)" data-a="doUnfollow" data-id="${d.id}">Unfollow</button><button class="btn big" style="background:var(--ground)" data-a="closeSheet">Cancel</button></div>`); },
   doUnfollow: (d) => { closeSheet(); setFollow(d.id,false); refresh(); toast(`Unfollowed ${PEOPLE[d.id].name}. You're still friends.`, "Undo", () => { setFollow(d.id,true); refresh(); }); },
@@ -821,11 +929,11 @@ const A = {
   undoSwipe: () => undoSwipe(),
   watch: (d) => push("watch",{id:d.id, i:+d.i||0}),
   vfollow: (d) => { const on = !isF(d.id); setFollow(d.id, on); updV(d.id);
-    toast(on ? `You're following ${PEOPLE[d.id].name}` : `Unfollowed ${PEOPLE[d.id].name}`, "Undo", () => { setFollow(d.id, !on); updV(d.id); }); },
+    toast(on ? onMsg(d.id) : offMsg(d.id), "Undo", () => { setFollow(d.id, !on); updV(d.id); }); },
   vlike: (d) => { const on = !S.liked.includes(d.k); S.liked = on ? [...S.liked, d.k] : S.liked.filter(x => x !== d.k); save();
     app.querySelectorAll(`[data-a="vlike"][data-k="${d.k}"]`).forEach(b => { b.classList.toggle("on", on); b.querySelector("span").textContent = fmtN(+b.dataset.base + (on?1:0)); }); },
   cardInfo: () => { const c = app.querySelector(".card.top"); if(c) push("profile",{id:c.dataset.id}); },
-  restartDeck: () => { S.deckPos = 0; S.skipped = []; save(); refresh(); },
+  restartDeck: () => { S.pos[S.dtype||"people"] = 0; S.skipped = []; save(); refresh(); },
   hideModule: () => { S.moduleHidden = true; save(); refresh(); toast("Hidden. You'll still find contributors in Interests.", "Undo", () => { S.moduleHidden=false; save(); refresh(); }); },
   dismissEvents: () => { S.eventsHint = false; save(); refresh(); },
   playHint: () => { S.eventsHint = false; save(); goTab("play"); }

@@ -299,9 +299,10 @@ img{display:block;max-width:100%}
 .vprog{position:absolute;left:0;right:0;bottom:calc(var(--bottom) + 8px);height:3px;background:rgba(255,255,255,.25);z-index:4}
 .vprog i{display:block;height:100%;width:0;background:#fff}
 
-/* topics + groups */
+/* topics */
 .label.topic{background:#EFE8FD;color:#5B34C2}
-.label.group{background:#FFEDE2;color:#A8481A}
+.label.place{background:#E4F3EC;color:#1E6B47}
+.tgroup{padding:8px 20px 8px;font-size:12px;font-weight:600;color:var(--muted)}
 .dtabs{position:absolute;left:16px;right:16px;top:calc(var(--top) + 60px);z-index:25;display:flex;gap:2px;padding:3px;border-radius:100px;background:rgba(0,0,0,.06)}
 .dtabs button{flex:1;height:34px;border-radius:100px;font-weight:600;font-size:14px;color:var(--muted);display:flex;align-items:center;justify-content:center;gap:6px}
 .dtabs button.on{background:var(--surface);color:var(--ink);box-shadow:0 1px 3px rgba(0,0,0,.12)}
@@ -347,7 +348,7 @@ img{display:block;max-width:100%}
       <li>Following a friend: unfollow keeps the friendship. Contributors unfollow with an Undo.</li>
       <li>Profile ••• has Mute, Not interested, Report and Block.</li>
       <li>Events moved to the Play tab.</li>
-      <li>Topics and groups (Interests and the Discover tabs) are a later-phase exploration, not Phase 1 scope.</li>
+      <li>Topics (learn topics and local topics) are a later-phase exploration, not Phase 1 scope.</li>
     </ul>
     <p class="small">On a phone, open the hosted version and use Add to Home Screen to install it.</p>
     <button id="reset" type="button">Reset prototype</button>
@@ -405,39 +406,38 @@ const PEOPLE = {
 };
 const CONTRIB = ["dana","mike","priya","ken","alana","sam"];
 const FRIENDS = ["mikey","angel","dave","sofia","joey"];
-/* Later-phase exploration: topics and public groups */
-const TOPICS = ["t_short","t_course","t_fit","t_putt","t_swing","t_budget"];
-const GROUPS = ["g_bay","g_women","g_sub90","g_dawn","g_twilight"];
+/* Later-phase exploration: topics to follow. Learn topics teach a skill; local topics are about places to play. */
+const LEARN = ["t_short","t_putt","t_swing","t_fit","t_strategy","t_rules"];
+const PLACES = ["p_bay","p_monterey","p_sd","p_phx"];
+const TOPICS = [...LEARN, ...PLACES];
 Object.assign(PEOPLE, {
-  t_short:  {name:"Short game",     kind:"topic", av:"i1", spec:"Chipping, pitching and bunker play", followers:"8.2k", posts:340, why:"Popular with golfers at your handicap", top:["dana","ken"], desc:"Drills and fixes for everything inside 100 yards."},
-  t_course: {name:"Course reviews", kind:"topic", av:"i4", spec:"Honest takes on where to play", followers:"11k", posts:520, why:"Matches courses you've played", top:["mike","sam"], desc:"Reviews, hole-by-hole tips and green-fee value."},
-  t_fit:    {name:"Golf fitness",   kind:"topic", av:"i3", spec:"Mobility, strength and warm-ups", followers:"4.6k", posts:190, why:"Trending this week", top:["priya","alana"], desc:"Short routines that help you turn, hit and recover."},
-  t_putt:   {name:"Putting",        kind:"topic", av:"i2", spec:"Lag, reads and short putts", followers:"6.9k", posts:260, why:"You average 33 putts a round", top:["dana","alana"], desc:"Speed control, green reading and the 3-footers that matter."},
-  t_swing:  {name:"Swing",          kind:"topic", av:"i1", spec:"Fixes, drills and slow motion", followers:"15k", posts:710, why:"Most followed topic", top:["alana","ken"], desc:"Simple, visual swing advice from teaching pros."},
-  t_budget: {name:"Budget golf",    kind:"topic", av:"i4", spec:"Great rounds under $60", followers:"3.1k", posts:120, why:"New this month", top:["sam","mike"], desc:"Twilight rates, hidden gems and gear deals."},
-  g_bay:    {name:"Bay Area Weekend Golfers", kind:"group", av:"i4", spec:"Public group · Bay Area", members:"1.2k", followers:"1.2k", posts:86, why:"3 friends are members", friends:["mikey","angel","dave"], desc:"Saturday tee times, carpools and open spots around the Bay."},
-  g_women:  {name:"Women Who Golf SF", kind:"group", av:"i2", spec:"Public group · San Francisco", members:"640", followers:"640", posts:42, why:"Angel and Sofia are members", friends:["angel","sofia"], desc:"Clinics, nine-hole meetups and a friendly scramble every month."},
-  g_sub90:  {name:"Sub-90 Club", kind:"group", av:"i1", spec:"Public group · Online", members:"3.4k", followers:"3.4k", posts:210, why:"For golfers around your handicap", friends:["joey"], desc:"Share rounds, swap tips and chase that first 89."},
-  g_dawn:   {name:"Dawn Patrol Golf", kind:"group", av:"i3", spec:"Public group · Peninsula", members:"410", followers:"410", posts:31, why:"Plays courses you've played", desc:"First tee times only. Done by 9."},
-  g_twilight:{name:"Twilight Nine", kind:"group", av:"i2", spec:"Public group · South Bay", members:"280", followers:"280", posts:19, why:"New group near you", desc:"After-work nines, all levels welcome."}
+  t_short:   {name:"Short game",       kind:"topic", cat:"learn", av:"i1", spec:"Chipping, pitching and bunker play", followers:"8.2k", posts:340, why:"Popular with golfers at your handicap", top:["dana","ken"], desc:"Drills and fixes for everything inside 100 yards."},
+  t_putt:    {name:"Putting",          kind:"topic", cat:"learn", av:"i2", spec:"Lag, reads and short putts", followers:"6.9k", posts:260, why:"You average 33 putts a round", top:["dana","alana"], desc:"Speed control, green reading and the 3-footers that matter."},
+  t_swing:   {name:"Swing basics",     kind:"topic", cat:"learn", av:"i1", spec:"Grip, setup and simple fixes", followers:"15k", posts:710, why:"Most followed learn topic", top:["alana","ken"], desc:"Simple, visual swing advice from teaching pros."},
+  t_fit:     {name:"Golf fitness",     kind:"topic", cat:"learn", av:"i3", spec:"Mobility, strength and warm-ups", followers:"4.6k", posts:190, why:"Trending this week", top:["priya","alana"], desc:"Short routines that help you turn, hit and recover."},
+  t_strategy:{name:"Course strategy",  kind:"topic", cat:"learn", av:"i4", spec:"Where to aim and when to lay up", followers:"5.4k", posts:230, why:"Helps with the holes you bogey most", top:["ken","mike"], desc:"Smarter targets, club choice and playing your miss."},
+  t_rules:   {name:"Rules and etiquette", kind:"topic", cat:"learn", av:"i2", spec:"Drops, penalties and pace of play", followers:"2.8k", posts:95, why:"Good for newer golfers", top:["alana"], desc:"Quick, clear answers to the rules questions that come up on the course."},
+  p_bay:     {name:"Bay Area golf",    kind:"topic", cat:"place", av:"i4", spec:"Courses from Half Moon Bay to Napa", followers:"9.1k", posts:410, why:"Courses you've played", top:["mike","ken"], courses:["Half Moon Bay","Presidio","Harding Park","Pasatiempo"], desc:"Course reviews, conditions and tee-time tips around the Bay."},
+  p_monterey:{name:"Monterey Peninsula", kind:"topic", cat:"place", av:"i1", spec:"Pebble Beach, Spyglass and nearby", followers:"7.3k", posts:280, why:"You played Pebble Beach", top:["mike"], courses:["Pebble Beach","Spyglass Hill","Pacific Grove","Bayonet"], desc:"Bucket-list rounds and the local courses worth the drive."},
+  p_sd:      {name:"San Diego golf",   kind:"topic", cat:"place", av:"i3", spec:"Torrey Pines and coastal courses", followers:"6.2k", posts:240, why:"Popular with golfers you follow", top:["sam","dana"], courses:["Torrey Pines","Balboa Park","Coronado","Encinitas Ranch"], desc:"Where to play in San Diego, from Torrey to budget gems."},
+  p_phx:     {name:"Phoenix desert golf", kind:"topic", cat:"place", av:"i2", spec:"Winter golf in the Valley", followers:"4.8k", posts:170, why:"Good winter trip pick", top:["alana","sam"], courses:["TPC Scottsdale","We-Ko-Pa","Papago","Troon North"], desc:"Desert courses, winter rates and trip planning."}
 });
 Object.assign(CLIPS, {
-  t_short:  [["v1","Three-ball drill for a cleaner strike on short pitches.","0:42",2480,41,"dana"],["v4","State am practice round: how I chip on fast greens.","1:12",380,6,"ken"],["v5","Lag putting ladder: 20, 30, 40 feet.","0:55",870,12,"dana"]],
-  t_course: [["v2","Pasatiempo 16 from the tee.","1:04",1320,18,"mike"],["v6","Best golf under $60 in San Diego, ranked.","1:20",260,9,"sam"],["v3","A $45 twilight round that plays like a top-100 course.","0:47",510,7,"mike"]],
-  t_fit:    [["v3","5-minute hip mobility routine before your first tee.","0:59",960,12,"priya"],["v1","Three stretches for a fuller turn.","0:44",720,8,"priya"],["v2","Slow motion: hips lead, hands follow.","0:22",2900,40,"alana"]],
-  t_putt:   [["v5","Lag putting ladder: 20, 30, 40 feet.","0:55",870,12,"dana"],["v3","Read the break from below the hole.","0:36",1100,20,"alana"],["v4","The gate drill for 3-footers.","0:29",640,9,"dana"]],
-  t_swing:  [["v5","One-move fix for an early release.","0:33",4100,88,"alana"],["v2","Tournament week routine, day by day.","0:51",290,4,"ken"],["v3","New golfers: the only grip check you need.","0:40",3300,61,"alana"]],
-  t_budget: [["v6","Best golf under $60 in San Diego, ranked.","1:20",260,9,"sam"],["v5","Twilight rates that are actually worth it.","0:45",180,4,"sam"],["v3","A $45 twilight round that plays like a top-100 course.","0:47",510,7,"mike"]],
-  g_bay:    [["v2","Open spots Saturday at Half Moon Bay, 7:40.","0:24",210,14,"mike"],["v6","Our monthly scramble recap.","0:58",340,22,"sam"],["v1","Who's in for Pasatiempo next month?","0:31",160,30,"mike"]],
-  g_women:  [["v3","Clinic recap: bunker basics.","0:46",190,11,"alana"],["v5","Nine-hole meetup at Presidio.","0:38",150,9,"priya"],["v4","Wedge warm-up we did together.","0:28",120,6,"priya"]],
-  g_sub90:  [["v1","How I finally broke 90: three habits.","1:02",880,64,"ken"],["v4","Course management for bogey golfers.","0:49",610,33,"dana"],["v5","Two-putt every green: the lag drill.","0:55",540,21,"dana"]],
-  g_dawn:   [["v6","6:30 tee time, fog and all.","0:27",90,5,"sam"],["v2","Sunrise over 16.","0:20",140,7,"mike"],["v3","Quick warm-up before the first tee.","0:40",80,3,"priya"]],
-  g_twilight:[["v5","Last light on the back nine.","0:25",70,4,"sam"],["v1","Putting for the skins.","0:33",60,6,"ken"],["v6","Nine holes, 90 minutes.","0:30",50,2,"mike"]]
+  t_short:   [["v1","Three-ball drill for a cleaner strike on short pitches.","0:42",2480,41,"dana"],["v4","How I chip on fast greens.","1:12",380,6,"ken"],["v5","Bunker exits in one swing.","0:31",1190,23,"dana"]],
+  t_putt:    [["v5","Lag putting ladder: 20, 30, 40 feet.","0:55",870,12,"dana"],["v3","Read the break from below the hole.","0:36",1100,20,"alana"],["v4","The gate drill for 3-footers.","0:29",640,9,"dana"]],
+  t_swing:   [["v5","One-move fix for an early release.","0:33",4100,88,"alana"],["v3","New golfers: the only grip check you need.","0:40",3300,61,"alana"],["v2","Slow motion: hips lead, hands follow.","0:22",2900,40,"ken"]],
+  t_fit:     [["v3","5-minute hip mobility routine before your first tee.","0:59",960,12,"priya"],["v1","Three stretches for a fuller turn.","0:44",720,8,"priya"],["v4","Warm up your wedges in 10 balls.","0:28",430,5,"priya"]],
+  t_strategy:[["v2","Where to miss on a short par 3 with water left.","0:38",640,9,"mike"],["v6","Picking targets on a windy day.","0:36",210,3,"ken"],["v1","Course management for bogey golfers.","0:49",610,33,"ken"]],
+  t_rules:   [["v4","Unplayable lie: your three options.","0:34",520,14,"alana"],["v6","Ready golf: keeping pace without rushing.","0:27",310,8,"alana"],["v3","Free relief from cart paths, step by step.","0:30",290,6,"alana"]],
+  p_bay:     [["v2","Pasatiempo 16 from the tee.","1:04",1320,18,"mike"],["v6","Half Moon Bay in the fog: how to play it.","0:41",450,10,"mike"],["v1","Harding Park on a $60 budget.","0:47",380,7,"ken"]],
+  p_monterey:[["v1","Pebble Beach 7: the shortest hole on the coast.","0:39",2100,52,"mike"],["v6","Spyglass opening holes, played smart.","0:58",880,19,"mike"],["v2","Pacific Grove: the poor man's Pebble.","0:44",760,15,"mike"]],
+  p_sd:      [["v6","Best golf under $60 in San Diego, ranked.","1:20",260,9,"sam"],["v5","Twilight at Torrey Pines South.","0:45",540,12,"sam"],["v3","Short-game practice spots around town.","0:35",320,6,"dana"]],
+  p_phx:     [["v3","Desert target golf: playing to the green.","0:52",410,9,"alana"],["v6","Winter rates worth booking now.","0:40",230,4,"sam"],["v5","Firm desert greens: how to land it short.","0:33",360,7,"alana"]]
 });
-const DECKS = { people: CONTRIB, topics: TOPICS, groups: GROUPS };
-const DNAME = { people:"People", topics:"Topics", groups:"Groups" };
-const isGroup = (id) => PEOPLE[id].kind === "group";
-const isEnt = (id) => ["topic","group"].includes(PEOPLE[id].kind);
+const DECKS = { people: CONTRIB, topics: TOPICS };
+const DNAME = { people:"People", topics:"Topics" };
+const isGroup = (id) => false;
+const isEnt = (id) => PEOPLE[id].kind === "topic";
 const verb = (id) => isGroup(id) ? "Join" : "Follow";
 const verbed = (id) => isGroup(id) ? "Joined" : "Following";
 const onMsg = (id) => isGroup(id) ? `You joined ${PEOPLE[id].name}` : `You're following ${PEOPLE[id].name}`;
@@ -451,10 +451,13 @@ const FEATURED = [
 const DEFAULT = () => ({
   following: ["dana","mikey","angel","dave","sofia","joey"],
   muted: [], blocked: [], notInterested: [], skipped: [],
-  liked: [], pos: {people:0, topics:0, groups:0}, dtype: "people", seenHint: false, eventsHint: true, moduleHidden: false, view: "list"
+  liked: [], pos: {people:0, topics:0}, dtype: "people", seenHint: false, eventsHint: true, moduleHidden: false, view: "list"
 });
 let S = load();
-if(!S.pos || typeof S.pos !== "object") S.pos = {people: S.deckPos || 0, topics: 0, groups: 0};
+if(!S.pos || typeof S.pos !== "object") S.pos = {people: S.deckPos || 0, topics: 0};
+/* Drop anything saved by older versions that no longer exists (e.g. groups). */
+S.following = S.following.filter(id => PEOPLE[id]); S.notInterested = S.notInterested.filter(id => PEOPLE[id]);
+if(!DECKS[S.dtype]) S.dtype = "people";
 function load(){ try{ const v = JSON.parse(localStorage.getItem("cp1-state")); if(v && v.following) return Object.assign(DEFAULT(), v); }catch(e){} return DEFAULT(); }
 function save(){ try{ localStorage.setItem("cp1-state", JSON.stringify(S)); }catch(e){} }
 const isF = (id) => S.following.includes(id);
@@ -495,7 +498,7 @@ const ic = {
 const plural = (n,w) => `${n} ${w}${n===1?"":"s"}`;
 const esc = (s) => String(s).replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 const av = (id, s=40) => `<img class="av" src="${IMG[PEOPLE[id].av]}" width="${s}" height="${s}" alt="">`;
-const label = (id) => ({contributor:`<span class="label">Contributor</span>`, friend:`<span class="label friend">Friend</span>`, topic:`<span class="label topic">Topic</span>`, group:`<span class="label group">Group</span>`})[PEOPLE[id].kind] || "";
+const label = (id) => ({contributor:`<span class="label">Contributor</span>`, friend:`<span class="label friend">Friend</span>`, topic:(PEOPLE[id].cat==="place" ? `<span class="label place">Local topic</span>` : `<span class="label topic">Learn</span>`)})[PEOPLE[id].kind] || "";
 
 /* ---------- navigation ---------- */
 const app = document.getElementById("app");
@@ -627,14 +630,12 @@ interests(){
     ${feat[0] ? postHTML(feat[0], why(feat[0])) : ""}
     ${hero}
     <section class="blk" style="padding-top:16px">
-      <div class="between" style="padding:0 20px 10px"><div><div class="h2">Topics to follow</div><div class="xs">Get more of what you care about</div></div><button class="link" data-a="discover" data-t="topics">Swipe</button></div>
-      <div class="twrap">${TOPICS.map(id => `<button class="tchip ${isF(id)?"on":""}" data-a="ftoggle" data-id="${id}">${I(isF(id)?ic.check:ic.plus,15,2.4)} ${esc(PEOPLE[id].name)}</button>`).join("")}</div>
-    </section>
-    <section class="blk" style="padding-top:16px">
-      <div class="between" style="padding:0 20px 10px"><div><div class="h2">Groups to join</div><div class="xs">Public groups. Anyone can join.</div></div><button class="link" data-a="discover" data-t="groups">Swipe</button></div>
-      <div class="car">${GROUPS.map(id => { const G = PEOPLE[id]; return `<div class="gcard"><button class="gcover" data-a="profile" data-id="${id}" style="background-image:url(${VID(CLIPS[id][0][0]).poster})" aria-label="Open ${esc(G.name)}"></button>
-        <div class="gbody"><button class="h3" style="text-align:left" data-a="profile" data-id="${id}">${esc(G.name)}</button><span class="xs">${G.members} members · ${esc(G.spec.replace("Public group · ",""))}</span>
-        ${G.friends ? `<span class="row" style="gap:6px"><span class="stack">${G.friends.slice(0,3).map(f=>av(f,22)).join("")}</span><span class="xs">${G.friends.length} ${G.friends.length>1?"friends":"friend"}</span></span>` : `<span class="xs">${esc(G.why)}</span>`}
+      <div class="between" style="padding:0 20px 4px"><div><div class="h2">Topics to follow</div><div class="xs">Get more of what you want to learn and where you play</div></div><button class="link" data-a="discover" data-t="topics">Swipe</button></div>
+      <div class="tgroup">Learn</div>
+      <div class="twrap">${LEARN.map(id => `<button class="tchip ${isF(id)?"on":""}" data-a="ftoggle" data-id="${id}">${I(isF(id)?ic.check:ic.plus,15,2.4)} ${esc(PEOPLE[id].name)}</button>`).join("")}</div>
+      <div class="tgroup">Places to play</div>
+      <div class="car">${PLACES.map(id => { const T = PEOPLE[id]; return `<div class="gcard"><button class="gcover" data-a="profile" data-id="${id}" style="background-image:url(${VID(CLIPS[id][0][0]).poster})" aria-label="Open ${esc(T.name)}"></button>
+        <div class="gbody"><span class="label place">Local topic</span><button class="h3" style="text-align:left" data-a="profile" data-id="${id}">${esc(T.name)}</button><span class="xs">${esc(T.spec)}</span><span class="xs">${T.followers} followers</span>
         ${followBtn(id,"small")}</div></div>`; }).join("")}</div>
     </section>
     ${feat.slice(1).map(p => postHTML(p, why(p))).join("")}
@@ -662,8 +663,8 @@ following(p){
   return `${subToolbar(p.title || "Following")}
   <div class="scroll sub">
     <section class="blk" style="padding-top:4px">
-      <label class="search">${I(ic.search,18,2,"var(--muted)")}<input id="q" type="search" placeholder="Search people, topics and groups" aria-label="Search what you follow" autocomplete="off"></label>
-      <div class="chips">${[["all","All"],["friends","Friends"],["contributors","Contributors"],["topics","Topics"],["groups","Groups"]].map(([k,l]) => `<button class="chip ${filter===k?"on":""}" data-a="filter" data-f="${k}">${l} ${countFor(k)}</button>`).join("")}</div>
+      <label class="search">${I(ic.search,18,2,"var(--muted)")}<input id="q" type="search" placeholder="Search people and topics" aria-label="Search what you follow" autocomplete="off"></label>
+      <div class="chips">${[["all","All"],["friends","Friends"],["contributors","Contributors"],["topics","Topics"]].map(([k,l]) => `<button class="chip ${filter===k?"on":""}" data-a="filter" data-f="${k}">${l} ${countFor(k)}</button>`).join("")}</div>
       <div id="list">${listRows(filter, p.q)}</div>
     </section>
     <p class="small" style="padding:8px 20px 24px">Unfollowing a friend keeps the friendship. You just stop seeing their posts in Friends.</p>
@@ -674,17 +675,17 @@ profile(p){
   const id = p.id, P = PEOPLE[id], c = P.kind === "contributor";
   if(hidden(id)) return `${subToolbar("")}<div class="scroll sub"><div class="empty" style="margin-top:80px">${I(ic.block,32,1.8,"var(--muted)")}<div class="h2" style="margin-top:10px">You can't view this</div><p class="small">You and this account can't see or interact with each other.</p><button class="btn ghost" data-a="unblock" data-id="${id}">Unblock</button></div></div>`;
   if(isEnt(id)){ const C = CLIPS[id], g = isGroup(id);
-    return `${subToolbar(g ? "Group" : "Topic")}
+    return `${subToolbar(P.cat === "place" ? "Local topic" : "Learn")}
   <div class="scroll sub">
     <section class="blk"><div class="ehero" style="background-image:url(${VID(C[0][0]).poster})"><div class="ein">${label(id)}<div class="h1">${esc(P.name)}</div><div style="font-size:14px;opacity:.95">${esc(P.spec)}</div></div></div>
       <div class="pad" style="display:flex;flex-direction:column;gap:12px">
         <div class="between"><div class="small">${g ? `${P.members} members` : `${P.followers} followers`} · ${P.posts} posts this week</div>${followBtn(id,"")}</div>
         <p class="body" style="margin:0">${esc(P.desc)}</p>
-        ${P.friends ? `<div class="row" style="gap:8px"><span class="stack">${P.friends.map(f=>av(f,28)).join("")}</span><span class="xs">${P.friends.map(f=>esc(PEOPLE[f].name.split(" ")[0])).join(", ")} ${P.friends.length>1?"are":"is"} in this group</span></div>` : ""}
+        ${P.courses ? `<div><div class="xs">Courses in this topic</div><div class="tchips">${P.courses.map(c=>`<span>${esc(c)}</span>`).join("")}</div></div>` : ""}
         ${P.top ? `<div><div class="xs">Top contributors</div><div class="row" style="gap:14px;margin-top:8px;flex-wrap:wrap">${P.top.map(c=>`<button class="row" style="gap:6px" data-a="profile" data-id="${c}">${av(c,28)}<span class="h3" style="font-size:14px">${esc(PEOPLE[c].name)}</span></button>`).join("")}</div></div>` : ""}
       </div></section>
     <section class="blk pad"><div class="h2">Videos</div><div class="vgrid">${C.map((c,k)=>`<button data-a="watch" data-id="${id}" data-i="${k}" style="background-image:url(${VID(c[0]).poster})" aria-label="Watch: ${esc(c[1])}"><em>${I(ic.play,10)} ${c[2]}</em></button>`).join("")}</div></section>
-    ${g ? `<p class="small" style="padding:4px 20px 24px">Public group. Members' posts in the group are visible to everyone. Joining never shares your private rounds.</p>` : `<p class="small" style="padding:4px 20px 24px">Following a topic adds its top posts to Interests. It never changes who can see your posts.</p>`}
+    <p class="small" style="padding:4px 20px 24px">${P.cat==="place" ? "You choose local topics yourself. We don't use your exact location to pick them." : "Following a topic adds its top posts to Interests."} It never changes who can see your posts.</p>
   </div>`; }
   const posts = FEATURED.filter(x => x.by === id);
   return `${subToolbar("", `<button class="gbtn glass" aria-label="More" data-a="menu" data-id="${id}">${I(ic.more,24,2)}</button>`)}
@@ -707,16 +708,16 @@ discover(p){
   const t = S.dtype || "people", ALL = DECKS[t], deck = remainingDeck(t);
   const pos = S.pos[t] || 0, total = ALL.length;
   const tabs = `<div class="dtabs" role="tablist">${Object.keys(DECKS).map(k => `<button role="tab" aria-selected="${k===t}" class="${k===t?"on":""}" data-a="dtype" data-t="${k}">${DNAME[k]}${remainingDeck(k).length?` <span class="dcount">${remainingDeck(k).length}</span>`:""}</button>`).join("")}</div>`;
-  const what = {people:"Contributors approved by 18Birdies", topics:"Topics picked for you", groups:"Public groups near you"}[t];
+  const what = {people:"Contributors approved by 18Birdies", topics:"Learn and local topics"}[t];
   const bars = `<div class="progress"><div class="bars">${ALL.map((_,i)=>`<i class="${i<Math.min(pos,total)?"on":""}"></i>`).join("")}</div><div class="xs" style="margin-top:6px">${Math.min(pos+1,total)} of ${total} · ${what}</div></div>`;
   if(!deck.length){
     const done = ALL.filter(isF), next = Object.keys(DECKS).find(k => k !== t && remainingDeck(k).length);
-    const noun = {people:"contributors", topics:"topics", groups:"groups"}[t];
+    const noun = {people:"contributors", topics:"topics"}[t];
     return `${subToolbar("Discover")}<div class="dwith">${tabs}
     <div class="scroll sub" style="padding-top:calc(var(--top) + 110px)"><section class="blk empty" style="margin:0 16px;border-radius:24px;padding:32px 24px">
       <span class="stack" style="justify-content:center">${(done.length?done:ALL).slice(0,3).map(id=>av(id,64)).join("")}</span>
       <div class="h1" style="margin-top:14px">You're all caught up</div>
-      <p class="small" style="margin:8px auto 18px;max-width:290px">You ${t==="groups"?"joined":"followed"} ${done.length} of ${total} ${noun}.${t==="people"?" Their public posts will show up in your Friends feed.":""}</p>
+      <p class="small" style="margin:8px auto 18px;max-width:290px">You followed ${done.length} of ${total} ${noun}.${t==="people"?" Their public posts will show up in your Friends feed.":""}</p>
       <div style="display:flex;flex-direction:column;gap:10px">${next ? `<button class="btn primary big" data-a="dtype" data-t="${next}">Swipe ${DNAME[next].toLowerCase()}</button>` : ""}<button class="btn ghost big" data-a="go" data-to="following">Manage following</button><button class="link" data-a="restartDeck" style="margin-top:6px">Start over</button></div>
       <p class="xs" style="margin-top:14px">Skipped ${noun} may show up again later.</p></section></div></div>`;
   }
@@ -813,13 +814,13 @@ placeholder(p){
 };
 
 /* ---------- lists ---------- */
-const KMAP = { friends:"friend", contributors:"contributor", topics:"topic", groups:"group" };
+const KMAP = { friends:"friend", contributors:"contributor", topics:"topic" };
 function countFor(k){ const ids = S.following.filter(id => !hidden(id)); return k==="all" ? ids.length : ids.filter(id => PEOPLE[id].kind === KMAP[k]).length; }
 function listRows(filter, q){
   let ids = S.following.filter(id => !hidden(id));
   if(filter !== "all") ids = ids.filter(id => PEOPLE[id].kind === KMAP[filter]);
   if(q) ids = ids.filter(id => PEOPLE[id].name.toLowerCase().includes(q.toLowerCase()));
-  if(!ids.length) return `<div class="empty"><p class="small">${q?"No one matches that search.":"You're not following anyone here yet."}</p>${filter!=="friends"?`<button class="btn primary" data-a="discover" data-t="${({topics:"topics",groups:"groups"})[filter]||"people"}">${I(ic.swipe,18,2)} Discover ${({topics:"topics",groups:"groups"})[filter]||"contributors"}</button>`:""}</div>`;
+  if(!ids.length) return `<div class="empty"><p class="small">${q?"No one matches that search.":"You're not following anyone here yet."}</p>${filter!=="friends"?`<button class="btn primary" data-a="discover" data-t="${filter==="topics"?"topics":"people"}">${I(ic.swipe,18,2)} Discover ${filter==="topics"?"topics":"contributors"}</button>`:""}</div>`;
   return ids.map(id => { const P = PEOPLE[id]; return `<div class="lrow"><button data-a="profile" data-id="${id}">${isEnt(id)?av(id,44).replace('class="av"','class="av" style="border-radius:12px"'):av(id,44)}</button>
     <button class="grow" style="text-align:left" data-a="profile" data-id="${id}"><span class="nm">${esc(P.name)} ${label(id)} ${S.muted.includes(id)?'<span class="label friend">Muted</span>':""}</span><span class="xs">${esc(P.spec)}</span></button>
     ${followBtn(id)}</div>`; }).join("");

@@ -338,6 +338,12 @@ img{display:block;max-width:100%}
 .vgrid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
 .vgrid button{position:relative;aspect-ratio:9/16;border-radius:10px;background:center/cover}
 .vgrid em{position:absolute;left:6px;bottom:6px;font-style:normal;font-size:11px;font-weight:500;color:#fff;display:inline-flex;align-items:center;gap:3px;text-shadow:0 1px 2px rgba(0,0,0,.6)}
+.vava.topic .av{border-radius:12px}
+.vfbtn.primary{align-self:flex-start;height:40px;padding:0 20px;border-radius:20px;background:#fff;border-color:#fff;color:var(--ink);font-size:15px}
+.vfbtn.primary.on{background:rgba(255,255,255,.2);border-color:rgba(255,255,255,.5);color:#fff}
+.vby{display:inline-flex;align-items:center;gap:6px;align-self:flex-start;color:#fff;font-size:13px;opacity:.9}
+.vby .av{border:1.5px solid #fff}
+.vby span{font-weight:500}
 .vctx{align-self:flex-start;display:inline-flex;align-items:center;gap:8px;padding:5px 6px 5px 8px;border-radius:12px;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .vctx>button:first-child{display:inline-flex;align-items:center;gap:6px;color:#fff;font-weight:500;font-size:13px}
 .vctxf{height:26px;padding:0 10px;border-radius:13px;background:#fff;color:var(--ink);font-weight:500;font-size:12px}
@@ -461,7 +467,7 @@ const DECKS = { people: CONTRIB, topics: TOPICS };
 const DNAME = { people:"People", topics:"Topics" };
 const isGroup = (id) => false;
 const isEnt = (id) => PEOPLE[id].kind === "topic";
-const verb = (id) => isGroup(id) ? "Join" : "Follow";
+const verb = (id) => isGroup(id) ? "Join" : PEOPLE[id].kind === "topic" ? "Follow topic" : "Follow";
 const verbed = (id) => isGroup(id) ? "Joined" : "Following";
 const onMsg = (id) => isGroup(id) ? `You joined ${PEOPLE[id].name}` : `You're following ${PEOPLE[id].name}`;
 const offMsg = (id) => isGroup(id) ? `You left ${PEOPLE[id].name}` : `Unfollowed ${PEOPLE[id].name}`;
@@ -758,7 +764,7 @@ discover(p){
       <div class="bars">${C.map((_,k)=>`<i class="${k===0?"on":""}"></i>`).join("")}</div>
       <span class="vbadge cvb">${I(ic.play,12)} ${C[0][2]}</span>
       <span class="why whyc">${I(ic.star,14,2.2)} ${esc(P.why)}</span>
-      ${cls==="top" ? `<span class="stamp f">${verb(id).toUpperCase()}</span><span class="stamp s">SKIP</span>` : ""}
+      ${cls==="top" ? `<span class="stamp f">FOLLOW</span><span class="stamp s">SKIP</span>` : ""}
       <div class="in"><div class="row" style="gap:10px"><img class="av" src="${IMG[P.av]}" width="44" height="44" alt="" style="border:2px solid #fff;${ent?"border-radius:12px":""}">
         <div style="min-width:0"><div class="row" style="gap:6px;flex-wrap:wrap"><span style="font-size:${P.name.length>18?20:24}px;font-weight:500;line-height:1.15">${esc(P.name)}</span>${label(id)}</div><div style="font-size:14px;opacity:.95">${esc(P.spec)}</div></div></div>
         ${extra}
@@ -788,15 +794,23 @@ watch(p){
       <div class="vshade"></div>
       <div class="vplay" aria-hidden="true">${I(ic.play,64)}</div>
       <div class="vrail">
-        <div class="vava"><button data-a="profile" data-id="${au}" aria-label="Open ${esc(P.name)}">${av(au,46)}</button><button class="vplus vf" data-a="vfollow" data-id="${au}" aria-label="Follow ${esc(P.name)}" ${isF(au)?"hidden":""}>${I(ic.plus,14,3)}</button></div>
+        ${isEnt(id)
+          ? `<div class="vava topic"><button data-a="profile" data-id="${id}" aria-label="Open ${esc(ctx.name)}">${av(id,46)}</button><button class="vplus vf" data-a="vfollow" data-id="${id}" aria-label="Follow topic ${esc(ctx.name)}" ${isF(id)?"hidden":""}>${I(ic.plus,14,3)}</button></div>`
+          : `<div class="vava"><button data-a="profile" data-id="${au}" aria-label="Open ${esc(P.name)}">${av(au,46)}</button><button class="vplus vf" data-a="vfollow" data-id="${au}" aria-label="Follow ${esc(P.name)}" ${isF(au)?"hidden":""}>${I(ic.plus,14,3)}</button></div>`}
         <button data-a="vlike" data-k="${key}" data-base="${c[3]}" class="${liked?"on":""}" aria-label="Like">${I(ic.heart,32,2)}<span>${fmtN(c[3]+(liked?1:0))}</span></button>
         <button data-a="toast" data-msg="Comments open the existing post detail" aria-label="Comments">${I(ic.comment,30,2)}<span>${c[4]}</span></button>
         <button data-a="toast" data-msg="Share sheet isn't part of this prototype" aria-label="Share">${I(ic.share,30,2)}<span>Share</span></button>
       </div>
       <div class="vinfo">
-        ${isEnt(id) ? `<span class="vctx"><button data-a="profile" data-id="${id}">${label(id)} ${esc(ctx.name)}</button><button class="vf vctxf ${isF(id)?"on":""}" data-a="vfollow" data-id="${id}">${isF(id)?verbed(id):verb(id)}</button></span>` : `<span class="why" style="align-self:flex-start">${I(ic.star,14,2.2)} ${esc(P.why)}</span>`}
-        <div class="row" style="gap:8px;flex-wrap:wrap"><button class="vname" data-a="profile" data-id="${au}">${esc(P.name)}</button>${label(au)}<button class="vfbtn vf ${isF(au)?"on":""}" data-a="vfollow" data-id="${au}">${isF(au)?"Following":"Follow"}</button></div>
+        ${isEnt(id) ? `
+        <span class="why" style="align-self:flex-start">${I(ic.star,14,2.2)} ${esc(ctx.why)}</span>
+        <div class="row" style="gap:8px;flex-wrap:wrap"><button class="vname" data-a="profile" data-id="${id}">${esc(ctx.name)}</button>${label(id)}</div>
+        <button class="vfbtn vf primary ${isF(id)?"on":""}" data-a="vfollow" data-id="${id}">${isF(id)?verbed(id):verb(id)}</button>
         <div class="vcap">${esc(c[1])}</div>
+        <button class="vby" data-a="profile" data-id="${au}">${av(au,22)} <span>${esc(P.name)}</span> · ${esc(P.kind==="contributor"?"Contributor":"Friend")}</button>` : `
+        <span class="why" style="align-self:flex-start">${I(ic.star,14,2.2)} ${esc(P.why)}</span>
+        <div class="row" style="gap:8px;flex-wrap:wrap"><button class="vname" data-a="profile" data-id="${au}">${esc(P.name)}</button>${label(au)}<button class="vfbtn vf ${isF(au)?"on":""}" data-a="vfollow" data-id="${au}">${isF(au)?"Following":"Follow"}</button></div>
+        <div class="vcap">${esc(c[1])}</div>`}
         <div class="vmeta">${k+1} of ${CLIPS[id].length} ${isEnt(id) ? `in ${esc(ctx.name)}` : `from ${esc(P.name.split(" ")[0])}`} · ${c[2]}${n===0?" · Swipe up for more":""}</div>
       </div>
       <div class="vprog"><i></i></div>

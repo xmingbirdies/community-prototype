@@ -19,6 +19,10 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@400;500;600;700&display=swap">
 <style>
+/* Licensed brand fonts used by Design System (2026): text styles use ABC Monument Grotesk, Numbers/* styles use EK Modena Medium. */
+@font-face{font-family:"ABC Monument Grotesk";src:url("fonts/ABCMonumentGrotesk-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:swap}
+@font-face{font-family:"ABC Monument Grotesk";src:url("fonts/ABCMonumentGrotesk-Medium.woff2") format("woff2");font-weight:500 700;font-style:normal;font-display:swap}
+@font-face{font-family:"EK Modena";src:url("fonts/EKModena-Medium.woff2") format("woff2");font-weight:400 700;font-style:normal;font-display:swap}
 /* Layout: one iPhone-sized app. Framed device on desktop, full-bleed on phones / when installed. Single light look, like the app. */
 :root{
   /* Tokens from the Figma library "Design System (2026)": Semantic Tokens (Light) + Primitive Palette + Dimensions */
@@ -45,6 +49,7 @@
   --r-sm:12px; --r-md:14px; --r-lg:16px; --r-full:999px; /* radius/* */
   --desk:#DADAD3;        /* around the framed device (not part of the app) */
   --f-ui:"ABC Monument Grotesk", "Inter Tight", -apple-system, "Segoe UI", Roboto, sans-serif;
+  --f-num:"EK Modena", "ABC Monument Grotesk", "Inter Tight", -apple-system, sans-serif; /* Numbers/* text styles */
   color-scheme:light;
 }
 html,body{height:100%}
@@ -338,6 +343,13 @@ img{display:block;max-width:100%}
 .vctxf{height:26px;padding:0 10px;border-radius:13px;background:#fff;color:var(--ink);font-weight:500;font-size:12px}
 .vctxf.on{background:rgba(255,255,255,.25);color:#fff}
 
+/* Numbers/* text styles (EK Modena Medium) */
+.topar b{font-family:var(--f-num);font-size:24px;font-weight:500;line-height:1.2}   /* Numbers/Medium */
+.sg b,.pstats b{font-family:var(--f-num);font-size:16px;font-weight:500}           /* Numbers/X Small */
+.grid4 .more::after{font-family:var(--f-num);font-size:20px;font-weight:500}        /* Numbers/Small */
+.vbadge,.card .thumbs em,.vgrid em,.dcount,.entry .bdg{font-family:var(--f-num);font-weight:500}
+.num{font-family:var(--f-num);font-weight:500;font-variant-numeric:tabular-nums}
+
 /* misc */
 .placeholder{margin:16px 20px;border:1.5px dashed #CFCFC8;border-radius:16px;padding:40px 20px;text-align:center;color:var(--muted)}
 .callout{margin:0 20px 12px;padding:12px 14px;border-radius:12px;background:var(--blue-soft);font-size:13px;line-height:1.35}
@@ -359,7 +371,7 @@ img{display:block;max-width:100%}
       <li>Events moved to the Play tab.</li>
       <li>Topics (learn topics and local topics) are a later-phase exploration, not Phase 1 scope.</li>
     </ul>
-    <p class="small">Colors, type sizes, icons, toolbars and the tab bar follow the Figma library Design System (2026). Text uses ABC Monument Grotesk where it's installed, otherwise Inter Tight.</p>
+    <p class="small">Colors, type sizes, icons, toolbars and the tab bar follow the Figma library Design System (2026). Text uses ABC Monument Grotesk and numbers use EK Modena, as in the design system.</p>
     <p class="small">On a phone, open the hosted version and use Add to Home Screen to install it.</p>
     <button id="reset" type="button">Reset prototype</button>
   </aside>

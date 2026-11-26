@@ -1,6 +1,6 @@
 // Offline cache for the Community prototype. Bump VERSION when files change.
 // Videos are not pre-downloaded: they stream when played, so installing stays small.
-const VERSION = "community-proto-v11";
+const VERSION = "community-proto-v12";
 const ASSETS = [
   "./", "./index.html", "./manifest.webmanifest", "./ds-icons.js", "./fonts/ABCMonumentGrotesk-Regular.woff2", "./fonts/ABCMonumentGrotesk-Medium.woff2", "./fonts/EKModena-Medium.woff2",
   "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png",

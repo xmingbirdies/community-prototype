@@ -356,6 +356,27 @@ img{display:block;max-width:100%}
 .vbadge,.card .thumbs em,.vgrid em,.dcount,.entry .bdg{font-family:var(--f-num);font-weight:500}
 .num{font-family:var(--f-num);font-weight:500;font-variant-numeric:tabular-nums}
 
+/* scenario launcher + phase 2 bits */
+.lcard{margin:0 16px 12px;padding:16px;border-radius:var(--r-lg);background:var(--surface);box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.lph{font-size:20px;line-height:24px;font-weight:500}
+.scn{display:flex;align-items:center;gap:12px;width:100%;text-align:left;padding:12px;margin-top:8px;border-radius:var(--r-md);border:1px solid var(--line);background:var(--surface)}
+.scn.on{border-color:var(--green);box-shadow:0 0 0 1px var(--green) inset}
+.scn-ic{width:40px;height:40px;border-radius:12px;background:var(--ground);display:grid;place-items:center;flex:none}
+.fchips{padding:0 20px 10px}
+.obar{position:absolute;left:0;right:0;bottom:0;z-index:30;background:var(--surface);border-top:1px solid var(--line);padding:14px 20px calc(var(--bottom) + 14px);display:flex;flex-direction:column;align-items:center;gap:10px}
+.obswipe{display:flex;align-items:center;justify-content:space-between;width:100%;text-align:left;padding:14px 4px 14px 16px;border-radius:var(--r-lg);background:var(--green);color:#fff;overflow:hidden}
+.obswipe .fan{transform:scale(.8);margin:-14px -10px}
+.rail{display:flex;gap:14px;overflow-x:auto;padding:0 20px;scrollbar-width:none}
+.rail::-webkit-scrollbar{display:none}
+.ritem{display:flex;flex-direction:column;align-items:center;gap:6px;flex:none;width:64px}
+.ring{width:64px;height:64px;border-radius:50%;display:grid;place-items:center;border:1px solid var(--line)}
+.ring.new{border:2.5px solid var(--orange)}
+.ring.sq,.ring.sq .av{border-radius:18px}
+.ring.sq .av{border-radius:14px}
+.dtabs.single{display:none}
+.dwith .dtabs.single + .progress{top:calc(var(--top) + 64px)}
+.dwith .dtabs.single ~ .deck{top:calc(var(--top) + 90px)}
+
 /* misc */
 .placeholder{margin:16px 20px;border:1.5px dashed #CFCFC8;border-radius:16px;padding:40px 20px;text-align:center;color:var(--muted)}
 .callout{margin:0 20px 12px;padding:12px 14px;border-radius:12px;background:var(--blue-soft);font-size:13px;line-height:1.35}
@@ -367,19 +388,19 @@ img{display:block;max-width:100%}
 <div class="stage">
   <aside class="notes">
     <span class="k">Prototype</span>
-    <h1>Community · Phase 1</h1>
-    <p>Everything here is clickable. The data is made up and resets when you tap Reset.</p>
+    <h1>Community prototype</h1>
+    <p>Pick a phase and a user on the start screen. Everything is clickable; the data is made up. Come back to the start screen from the Me tab or the button below.</p>
     <ul>
       <li>Friends and Interests are the two entry points at the top of Community.</li>
       <li>Try the swipe Discover: drag a card right to follow, left to skip, or use the buttons. Tap a card to watch its videos full screen, then swipe up for more.</li>
       <li>Following a friend: unfollow keeps the friendship. Contributors unfollow with an Undo.</li>
       <li>Profile ••• has Mute, Not interested, Report and Block.</li>
       <li>Events moved to the Play tab.</li>
-      <li>Topics (learn topics and local topics) are a later-phase exploration, not Phase 1 scope.</li>
+      <li>Phase 2 adds topics (learn and local), topic onboarding, a feed filter and a follows rail.</li>
     </ul>
     <p class="small">Colors, type sizes, icons, toolbars and the tab bar follow the Figma library Design System (2026). Text uses ABC Monument Grotesk and numbers use EK Modena, as in the design system.</p>
     <p class="small">On a phone, open the hosted version and use Add to Home Screen to install it.</p>
-    <button id="reset" type="button">Reset prototype</button>
+    <div style="display:flex;gap:8px;flex-wrap:wrap"><button id="scen" type="button">Choose scenario</button><button id="reset" type="button">Restart this scenario</button></div>
   </aside>
   <div class="device" id="device">
     <div class="sbar"><span>9:41</span><span class="island"></span><span class="sicons">
@@ -478,7 +499,8 @@ const FEATURED = [
 ];
 
 const DEFAULT = () => ({
-  following: ["dana","mikey","angel","dave","sofia","joey"],
+  following: ["mikey","angel","dave","sofia","joey"],
+  phase: 0, persona: "", onboarded: false, onbStep: 1, onbTopics: [], feedFilter: "all", justOnboarded: false,
   muted: [], blocked: [], notInterested: [], skipped: [],
   liked: [], pos: {people:0, topics:0}, dtype: "people", seenHint: false, eventsHint: true, moduleHidden: false, view: "list"
 });
@@ -487,6 +509,17 @@ if(!S.pos || typeof S.pos !== "object") S.pos = {people: S.deckPos || 0, topics:
 /* Drop anything saved by older versions that no longer exists (e.g. groups). */
 S.following = S.following.filter(id => PEOPLE[id]); S.notInterested = S.notInterested.filter(id => PEOPLE[id]);
 if(!DECKS[S.dtype]) S.dtype = "people";
+const PH2 = () => S.phase === 2;
+const deckKeys = () => PH2() ? ["people","topics"] : ["people"];
+const nonFriend = () => S.following.filter(id => PEOPLE[id] && PEOPLE[id].kind !== "friend" && !S.blocked.includes(id));
+const SCEN = {
+  1: { title:"Phase 1", sub:"PRD scope", desc:"Friends feed, Interests with approved contributors and featured posts, swipe Discover, Manage following, events moved to Play.",
+       new:{t:"New user", d:"Has friends, follows no one else. Try the Discover module and the swipe deck."},
+       active:{t:"Active user · follows 5+", d:"Follows 5 contributors. See their posts in Friends and manage who you follow.", ids:["dana","mike","priya","alana","ken"]} },
+  2: { title:"Phase 2", sub:"Later-phase exploration", desc:"Adds learn and local topics, topic onboarding in Interests, a feed filter and a follows rail.",
+       new:{t:"New user", d:"Starts with onboarding in Interests: pick topics, then people."},
+       active:{t:"Active user · follows 5+", d:"Follows 3 people and 3 topics. Try the feed filter and the follows rail.", ids:["dana","mike","alana","t_short","t_swing","p_bay"]} }
+};
 function load(){ try{ const v = JSON.parse(localStorage.getItem("cp1-state")); if(v && v.following) return Object.assign(DEFAULT(), v); }catch(e){} return DEFAULT(); }
 function save(){ try{ localStorage.setItem("cp1-state", JSON.stringify(S)); }catch(e){} }
 const isF = (id) => S.following.includes(id);
@@ -538,7 +571,7 @@ const label = (id) => ({contributor:`<span class="label">Contributor</span>`, fr
 const app = document.getElementById("app");
 let stack = [];   // [{name, params}]
 let tab = "community";
-const ROOTS = { community:"home", courses:"placeholder", play:"play", improve:"placeholder", me:"placeholder" };
+const ROOTS = { community:"home", courses:"placeholder", play:"play", improve:"placeholder", me:"launcher" };
 function render(anim){
   const top = stack[stack.length-1];
   const html = SCREENS[top.name](top.params || {});
@@ -605,7 +638,12 @@ function postHTML(p, source){
 /* ---------- screens ---------- */
 const SCREENS = {
 home(){
-  const followedContrib = FEATURED.filter(p => isF(p.by) && !S.muted.includes(p.by) && !hidden(p.by));
+  const ph2 = PH2(), f = ph2 ? (S.feedFilter || "all") : "all";
+  const live = (id) => !S.muted.includes(id) && !hidden(id);
+  const followPosts = S.following.filter(id => PEOPLE[id].kind === "contributor" && live(id))
+    .map(id => FEATURED.find(p => p.by === id) || {by:id, meta:"5h", loc:PEOPLE[id].loc || "", img:PEOPLE[id].cover, i:0, text:CLIPS[id][0][1]});
+  const topicPosts = ph2 ? S.following.filter(id => PEOPLE[id].kind === "topic").map(t => { const c = CLIPS[t][0], au = c[5]; const k = Math.max(0, CLIPS[au].findIndex(x => x[0] === c[0]));
+    return {t, post:{by:au, meta:"3h", loc:"", img:"i1", i:k, text:c[1]}}; }).filter(x => live(x.post.by)) : [];
   const showModule = !S.moduleHidden && remainingDeck().length > 0;
   const round = `<article class="post">
     <div class="phead">${av("mikey",40)}<div style="flex:1"><div class="pname">Mikey Downs</div><div class="pmeta">4h  ·  <b>Pebble Beach</b></div></div><button aria-label="More" data-a="menu" data-id="mikey" style="width:32px;height:32px;display:grid;place-items:center">${I(ic.more)}</button></div>
@@ -618,29 +656,79 @@ home(){
   const module = showModule ? `<section class="blk pad" aria-label="Discover contributors">
       <div class="between"><div><div class="h2">Discover contributors</div><div class="xs">Coaches and golfers approved by 18Birdies</div></div><button aria-label="Hide" data-a="hideModule">${I(ic.x,20)}</button></div>
       <div class="row" style="margin-top:12px;gap:16px">${fan()}<div style="display:flex;flex-direction:column;gap:10px"><div class="small" style="color:var(--ink)">${remainingDeck().length} to swipe through. Right to follow, left to skip.</div><button class="btn primary" data-a="discover" data-t="people">${I(ic.swipe,18,2)} Start swiping</button></div></div></section>` : "";
-  const angel = { by:"angel", meta:"1d", loc:"Half Moon Bay", img:"i2", text:"Windy one today. Bogey free on the back nine though.", likes:9, comments:2 };
+  const angel = postHTML({ by:"angel", meta:"1d", loc:"Half Moon Bay", img:"i2", text:"Windy one today. Bogey free on the back nine though.", likes:9, comments:2 });
+  const fl = followPosts.map(p => postHTML(p, `<span class="label follow">Following</span>`)).join("");
+  const tp = topicPosts.map(x => postHTML(x.post, `${label(x.t).replace(/>(Learn|Local topic)</, ">From " + esc(PEOPLE[x.t].name) + "<")}`)).join("");
+  const nP = nonFriend().filter(id => PEOPLE[id].kind === "contributor").length, nT = nonFriend().filter(id => PEOPLE[id].kind === "topic").length;
+  const filterBar = ph2 ? `<div class="chips fchips">${[["all","All"],["friends","Friends"],["following","Following"],["topics","Topics"]].map(([k,l]) => `<button class="chip ${f===k?"on":""}" data-a="feedFilter" data-f="${k}">${l}</button>`).join("")}</div>` : "";
+  const caught = `<section class="blk empty">${fan().replace('class="fan"','class="fan" style="margin:0 auto"')}
+      <div class="h2" style="margin-top:6px">You're all caught up</div>
+      <p class="small" style="max-width:280px;margin:8px auto 14px">You've seen every post from your friends. Want to find a few contributors to follow?</p>
+      <button class="btn primary" data-a="discover" data-t="people">${I(ic.swipe,18,2)} Discover contributors</button></section>`;
+  let body;
+  if(f === "friends") body = round + angel + caught;
+  else if(f === "following") body = `<section class="blk" style="padding:12px 20px"><button class="row" style="width:100%;text-align:left" data-a="go" data-to="following"><span class="stack">${nonFriend().filter(id=>PEOPLE[id].kind==="contributor").slice(0,3).map(id=>av(id,32)).join("")}</span><span style="flex:1"><span class="h3">${plural(nP,"person").replace("persons","people")}</span><br><span class="xs">${followPosts.length} new posts</span></span><span class="link">Manage</span></button></section>`
+      + (fl || `<section class="blk empty"><div class="h2">Nobody followed yet</div><p class="small" style="margin:8px auto 14px">Follow contributors to see their posts here.</p><button class="btn primary" data-a="discover" data-t="people">${I(ic.swipe,18,2)} Discover contributors</button></section>`);
+  else if(f === "topics") body = tp || `<section class="blk empty"><div class="h2">No topics yet</div><p class="small" style="margin:8px auto 14px">Follow a few topics to see posts about them here.</p><button class="btn primary" data-a="discover" data-t="topics">${I(ic.swipe,18,2)} Discover topics</button></section>`;
+  else body = round + (nP ? "" : module) + fl + tp + angel + (nP ? module : "") + caught;
   return `${homeToolbar()}
   <div class="scroll">
     <div class="entries">
       <button class="entry" data-a="go" data-to="friends">${I(ic.people,20)} Friends</button>
       <button class="entry" data-a="go" data-to="interests">${I(ic.compass,20)} Interests ${remainingDeck().length?`<span class="bdg">${remainingDeck().length}</span>`:""}</button>
     </div>
-    ${S.eventsHint ? `<div class="callout row" style="margin:0 0 8px;border-radius:0;padding:12px 20px"><span>${I(ic.trophy,20)}</span><span style="flex:1"><b>Events moved to Play.</b> Find your tournaments and leagues in the Play tab.</span><button data-a="playHint" class="link">Go</button><button aria-label="Dismiss" data-a="dismissEvents">${I(ic.x,18)}</button></div>` : ""}
-    ${round}
-    ${module}
-    ${followedContrib.map(p => postHTML(p, `<span class="label follow">Following</span>`)).join("")}
-    ${postHTML(angel)}
-    <section class="blk empty">${fan().replace('class="fan"','class="fan" style="margin:0 auto"')}
-      <div class="h2" style="margin-top:6px">You're all caught up</div>
-      <p class="small" style="max-width:280px;margin:8px auto 14px">You've seen every post from your friends. Want to find a few contributors to follow?</p>
-      <button class="btn primary" data-a="discover" data-t="people">${I(ic.swipe,18,2)} Discover contributors</button></section>
+    ${filterBar}
+    ${S.eventsHint && f === "all" ? `<div class="callout row" style="margin:0 0 8px;border-radius:0;padding:12px 20px"><span>${I(ic.trophy,20)}</span><span style="flex:1"><b>Events moved to Play.</b> Find your tournaments and leagues in the Play tab.</span><button data-a="playHint" class="link">Go</button><button aria-label="Dismiss" data-a="dismissEvents">${I(ic.x,18)}</button></div>` : ""}
+    ${body}
   </div>
   <button class="fab" data-a="toast" data-msg="Posting isn't part of this prototype">Create</button>
   ${tabbar()}`;
 },
 
+onboarding(){
+  const step = S.onbStep || 1, sel = S.onbTopics || [];
+  if(step === 1) return `${subToolbar("Interests")}
+  <div class="scroll sub" style="padding-bottom:calc(var(--bottom) + 150px)">
+    <section class="blk" style="padding:20px">
+      <div class="xs">Step 1 of 2</div>
+      <div class="h1" style="margin:6px 0">Make Interests yours</div>
+      <p class="small" style="margin:0 0 14px">Pick a few topics. We'll show posts and coaches to match. You can change this anytime.</p>
+      <div class="tgroup" style="padding:4px 0 8px">Learn</div>
+      <div class="twrap" style="padding:0 0 12px">${LEARN.map(id => `<button class="tchip ${sel.includes(id)?"on":""}" data-a="onbToggle" data-id="${id}">${I(sel.includes(id)?ic.check:ic.plus,15,2.4)} ${esc(PEOPLE[id].name)}</button>`).join("")}</div>
+      <div class="tgroup" style="padding:4px 0 8px">Places to play</div>
+      <div class="twrap" style="padding:0 0 12px">${PLACES.map(id => `<button class="tchip ${sel.includes(id)?"on":""}" data-a="onbToggle" data-id="${id}">${I(sel.includes(id)?ic.check:ic.plus,15,2.4)} ${esc(PEOPLE[id].name)}</button>`).join("")}</div>
+      <p class="xs" style="margin:0">You pick places yourself. We never use your exact location.</p>
+    </section>
+  </div>
+  <div class="obar"><button class="btn primary big" data-a="onbNext" ${sel.length?"":"disabled"} style="${sel.length?"":"opacity:.4"}">${sel.length ? `Continue · ${sel.length} selected` : "Pick at least one"}</button><button class="link" data-a="onbSkip" style="color:var(--muted)">Skip for now</button></div>`;
+  const tops = [...new Set(sel.flatMap(t => PEOPLE[t].top || []))];
+  const people = [...tops, ...CONTRIB.filter(id => !tops.includes(id))].filter(id => !hidden(id));
+  const names = sel.map(t => PEOPLE[t].name);
+  return `${subToolbar("Interests")}
+  <div class="scroll sub" style="padding-bottom:calc(var(--bottom) + 150px)">
+    <section class="blk" style="padding:20px 20px 8px">
+      <div class="xs">Step 2 of 2</div>
+      <div class="h1" style="margin:6px 0">People worth following</div>
+      <p class="small" style="margin:0 0 14px">Coaches and golfers approved by 18Birdies${names.length?`, picked for ${esc(names.slice(0,3).join(", "))}`:""}.</p>
+      <button class="obswipe" data-a="discover" data-t="people"><span><span class="h3" style="color:#fff">Swipe through ${remainingDeck().length}</span><br><span class="xs" style="color:#C9D6CE">Right to follow, left to skip</span></span>${fan()}</button>
+      <div class="xs" style="margin:14px 0 2px">Or pick from the list</div>
+    </section>
+    <section class="blk" style="padding:0 0 8px;margin-top:-8px">
+      ${people.map(id => { const P = PEOPLE[id]; return `<div class="lrow"><button data-a="profile" data-id="${id}">${av(id,44)}</button><button class="grow" style="text-align:left" data-a="profile" data-id="${id}"><span class="nm">${esc(P.name)} <span class="label">Contributor</span></span><span class="xs">${esc(P.spec)} · ${P.followers}</span></button>${followBtn(id)}</div>`; }).join("")}
+    </section>
+  </div>
+  <div class="obar"><button class="btn primary big" data-a="onbDone">Done</button><button class="link" data-a="onbSkip" style="color:var(--muted)">Skip for now</button></div>`;
+},
+
 interests(){
+  if(PH2() && !S.onboarded) return SCREENS.onboarding();
   const left = remainingDeck();
+  const follows = nonFriend();
+  const done = S.justOnboarded ? `<section class="blk row" style="padding:14px 20px;background:#EAF7D3;gap:12px">${I(ic.check,22,2,"#3F6000")}<span style="flex:1"><span class="h3">You're all set</span><br><span class="xs">Following ${plural(follows.filter(id=>PEOPLE[id].kind==="topic").length,"topic")} and ${plural(follows.filter(id=>PEOPLE[id].kind==="contributor").length,"person").replace("persons","people")}. Change them anytime in Manage following.</span></span><button aria-label="Dismiss" data-a="dismissDone">${I(ic.x,18)}</button></section>` : "";
+  const rail = PH2() && follows.length ? `<section class="blk" style="padding:14px 0 12px">
+      <div class="between" style="padding:0 20px 10px"><div><div class="h2">Your follows</div><div class="xs">New posts first</div></div><button class="link" data-a="go" data-to="following">Manage</button></div>
+      <div class="rail">${follows.map((id,i) => `<button class="ritem" data-a="watch" data-id="${id}" data-i="0"><span class="ring ${i<2?"new":""} ${PEOPLE[id].kind==="topic"?"sq":""}">${av(id,56)}</span><span class="xs" style="color:${i<2?"var(--ink)":"var(--muted)"}">${esc(PEOPLE[id].name.split(" ")[0])}</span></button>`).join("")}</div></section>` : "";
+  const nobody = !PH2() && !follows.length ? `<section class="blk row" style="padding:12px 20px;gap:10px">${I(ic.people,22,2,"var(--muted)")}<span style="flex:1"><span class="h3">Not following anyone yet</span><br><span class="xs">Following is optional. Friends stay in Friends.</span></span><button class="link" data-a="go" data-to="following">Manage</button></section>` : "";
   const feat = FEATURED.filter(p => !hidden(p.by) && !S.notInterested.includes(p.by));
   const why = (p) => `<span class="why">${I(ic.star,14,2.2)} ${esc(PEOPLE[p.by].why)}</span>`;
   const hero = `<section class="blk" style="padding:16px 0">
@@ -661,9 +749,10 @@ interests(){
     </div></section>`;
   return `${subToolbar("Interests")}
   <div class="scroll sub">
+    ${done}${rail}${nobody}
     ${feat[0] ? postHTML(feat[0], why(feat[0])) : ""}
     ${hero}
-    <section class="blk" style="padding-top:16px">
+    ${PH2() ? `<section class="blk" style="padding-top:16px">
       <div class="between" style="padding:0 20px 4px"><div><div class="h2">Topics to follow</div><div class="xs">Get more of what you want to learn and where you play</div></div><button class="link" data-a="discover" data-t="topics">Swipe</button></div>
       <div class="tgroup">Learn</div>
       <div class="twrap">${LEARN.map(id => `<button class="tchip ${isF(id)?"on":""}" data-a="ftoggle" data-id="${id}">${I(isF(id)?ic.check:ic.plus,15,2.4)} ${esc(PEOPLE[id].name)}</button>`).join("")}</div>
@@ -671,7 +760,7 @@ interests(){
       <div class="car">${PLACES.map(id => { const T = PEOPLE[id]; return `<div class="gcard"><button class="gcover" data-a="profile" data-id="${id}" style="background-image:url(${VID(CLIPS[id][0][0]).poster})" aria-label="Open ${esc(T.name)}"></button>
         <div class="gbody"><span class="label place">Local topic</span><button class="h3" style="text-align:left" data-a="profile" data-id="${id}">${esc(T.name)}</button><span class="xs">${esc(T.spec)}</span><span class="xs">${T.followers} followers</span>
         ${followBtn(id,"small")}</div></div>`; }).join("")}</div>
-    </section>
+    </section>` : ""}
     ${feat.slice(1).map(p => postHTML(p, why(p))).join("")}
     <p class="small" style="text-align:center;padding:12px 20px 24px">That's everything featured for now.</p>
   </div>`;
@@ -697,8 +786,8 @@ following(p){
   return `${subToolbar(p.title || "Following")}
   <div class="scroll sub">
     <section class="blk" style="padding-top:4px">
-      <label class="search">${I(ic.search,18,2,"var(--muted)")}<input id="q" type="search" placeholder="Search people and topics" aria-label="Search what you follow" autocomplete="off"></label>
-      <div class="chips">${[["all","All"],["friends","Friends"],["contributors","Contributors"],["topics","Topics"]].map(([k,l]) => `<button class="chip ${filter===k?"on":""}" data-a="filter" data-f="${k}">${l} ${countFor(k)}</button>`).join("")}</div>
+      <label class="search">${I(ic.search,18,2,"var(--muted)")}<input id="q" type="search" placeholder="${PH2()?"Search people and topics":"Search people you follow"}" aria-label="Search what you follow" autocomplete="off"></label>
+      <div class="chips">${[["all","All"],["friends","Friends"],["contributors","Contributors"],...(PH2()?[["topics","Topics"]]:[])].map(([k,l]) => `<button class="chip ${filter===k?"on":""}" data-a="filter" data-f="${k}">${l} ${countFor(k)}</button>`).join("")}</div>
       <div id="list">${listRows(filter, p.q)}</div>
     </section>
     <p class="small" style="padding:8px 20px 24px">Unfollowing a friend keeps the friendship. You just stop seeing their posts in Friends.</p>
@@ -739,13 +828,14 @@ profile(p){
 
 discover(p){
   if(p && p.t){ S.dtype = p.t; p.t = null; save(); }
+  if(!deckKeys().includes(S.dtype)) S.dtype = "people";
   const t = S.dtype || "people", ALL = DECKS[t], deck = remainingDeck(t);
   const pos = S.pos[t] || 0, total = ALL.length;
-  const tabs = `<div class="dtabs" role="tablist">${Object.keys(DECKS).map(k => `<button role="tab" aria-selected="${k===t}" class="${k===t?"on":""}" data-a="dtype" data-t="${k}">${DNAME[k]}${remainingDeck(k).length?` <span class="dcount">${remainingDeck(k).length}</span>`:""}</button>`).join("")}</div>`;
+  const tabs = `<div class="dtabs ${deckKeys().length<2?"single":""}" role="tablist">${deckKeys().map(k => `<button role="tab" aria-selected="${k===t}" class="${k===t?"on":""}" data-a="dtype" data-t="${k}">${DNAME[k]}${remainingDeck(k).length?` <span class="dcount">${remainingDeck(k).length}</span>`:""}</button>`).join("")}</div>`;
   const what = {people:"Contributors approved by 18Birdies", topics:"Learn and local topics"}[t];
   const bars = `<div class="progress"><div class="bars">${ALL.map((_,i)=>`<i class="${i<Math.min(pos,total)?"on":""}"></i>`).join("")}</div><div class="xs" style="margin-top:6px">${Math.min(pos+1,total)} of ${total} · ${what}</div></div>`;
   if(!deck.length){
-    const done = ALL.filter(isF), next = Object.keys(DECKS).find(k => k !== t && remainingDeck(k).length);
+    const done = ALL.filter(isF), next = deckKeys().find(k => k !== t && remainingDeck(k).length);
     const noun = {people:"contributors", topics:"topics"}[t];
     return `${subToolbar("Discover")}<div class="dwith">${tabs}
     <div class="scroll sub" style="padding-top:calc(var(--top) + 110px)"><section class="blk empty" style="margin:0 16px;border-radius:24px;padding:32px 24px">
@@ -849,6 +939,21 @@ play(){
   </div>${tabbar()}`;
 },
 
+launcher(){
+  const card = (n) => { const P = SCEN[n]; return `<section class="lcard">
+      <div class="between"><div><span class="lph">${P.title}</span><span class="xs" style="margin-left:8px">${P.sub}</span></div></div>
+      <p class="small" style="margin:8px 0 12px">${P.desc}</p>
+      ${["new","active"].map(u => { const on = S.phase === n && S.persona === u; return `<button class="scn ${on?"on":""}" data-a="scenario" data-p="${n}" data-u="${u}">
+        <span class="scn-ic">${I(u==="new"?ic.plus:ic.people,22)}</span>
+        <span style="flex:1;min-width:0"><span class="h3">${P[u].t}</span>${on?` <span class="label follow">Current</span>`:""}<br><span class="xs">${P[u].d}</span></span>${I(ic.chev,18,2,"var(--muted)")}</button>`; }).join("")}
+    </section>`; };
+  return `<div class="scroll sub" style="padding-top:calc(var(--top) + 28px)">
+    <div style="padding:0 20px 16px"><div class="xs" style="font-weight:500">18Birdies Community</div><div class="h1" style="font-size:28px;line-height:32px;margin-top:4px">Prototype</div><p class="small" style="margin:8px 0 0">Pick a phase and a user to start. Come back here anytime from the Me tab.</p></div>
+    ${card(1)}${card(2)}
+    <p class="xs" style="padding:8px 20px 24px">Sample people, photos and videos. Your taps are saved on this device only.</p>
+  </div>${S.phase ? tabbar() : ""}`;
+},
+
 placeholder(p){
   const names = {courses:"Courses", improve:"Improve", me:"Me"};
   return `${homeToolbar()}<div class="scroll"><div class="placeholder" style="margin-top:24px">${names[p.tab]||""} isn't part of this prototype.<br><br><button class="btn ghost" data-a="tab" data-t="community">Back to Community</button></div></div>${tabbar()}`;
@@ -950,6 +1055,15 @@ const A = {
   unfollow: (d) => { setFollow(d.id,false); refresh(); toast(offMsg(d.id), "Undo", () => { setFollow(d.id,true); refresh(); }); },
   ftoggle: (d) => { const on = !isF(d.id); setFollow(d.id,on); refresh(); toast(on ? onMsg(d.id) : offMsg(d.id), "Undo", () => { setFollow(d.id,!on); refresh(); }); },
   dtype: (d) => { S.dtype = d.t; save(); refresh(); },
+  scenario: (d) => { const ph = +d.p, u = d.u; S = DEFAULT(); S.phase = ph; S.persona = u;
+    if(u === "active"){ S.following.push(...SCEN[ph].active.ids); S.onboarded = true; S.seenHint = true; }
+    save(); closeSheet(true); hideToast(); goTab("community"); toast(`${SCEN[ph].title} · ${SCEN[ph][u].t}`); },
+  feedFilter: (d) => { S.feedFilter = d.f; save(); refresh(); },
+  onbToggle: (d) => { const on = !S.onbTopics.includes(d.id); S.onbTopics = on ? [...S.onbTopics, d.id] : S.onbTopics.filter(x => x !== d.id); save(); refresh(); },
+  onbNext: () => { if(!S.onbTopics.length) return; for(const t of S.onbTopics) if(!isF(t)) S.following.push(t); S.onbStep = 2; save(); refresh(); },
+  onbDone: () => { S.onboarded = true; S.justOnboarded = true; save(); refresh(); },
+  onbSkip: () => { S.onboarded = true; save(); refresh(); },
+  dismissDone: () => { S.justOnboarded = false; save(); refresh(); },
   askUnfollow: (d) => { const P = PEOPLE[d.id]; sheet(`<div style="text-align:center;padding:4px 24px 14px">${av(d.id,56)}<div class="h2" style="margin-top:10px">Unfollow ${esc(P.name)}?</div><p class="small" style="margin:8px 0 0">You'll stay friends. ${esc(P.name.split(" ")[0])}'s posts won't show in your Friends feed, and you can follow again anytime.</p></div>
       <div style="display:flex;flex-direction:column;gap:10px;padding:0 20px"><button class="btn big" style="background:#FDECEC;color:var(--red)" data-a="doUnfollow" data-id="${d.id}">Unfollow</button><button class="btn big" style="background:var(--ground)" data-a="closeSheet">Cancel</button></div>`); },
   doUnfollow: (d) => { closeSheet(); setFollow(d.id,false); refresh(); toast(`Unfollowed ${PEOPLE[d.id].name}. You're still friends.`, "Undo", () => { setFollow(d.id,true); refresh(); }); },
@@ -989,9 +1103,10 @@ document.addEventListener("keydown", e => {
   if(e.key === "Escape") closeSheet();
   if(stack[stack.length-1]?.name === "discover" && !dev.querySelector(".sheet")){ if(e.key==="ArrowRight") A.swipe({dir:"right"}); if(e.key==="ArrowLeft") A.swipe({dir:"left"}); }
 });
-document.getElementById("reset").addEventListener("click", () => { S = DEFAULT(); save(); closeSheet(true); hideToast(); goTab("community"); });
+document.getElementById("reset").addEventListener("click", () => { if(S.phase) A.scenario({p:S.phase, u:S.persona||"new"}); else { S = DEFAULT(); save(); goTab("me"); } });
+document.getElementById("scen").addEventListener("click", () => { closeSheet(true); hideToast(); goTab("me"); });
 
-goTab("community");
+if(S.phase) goTab("community"); else { tab = "me"; stack = [{name:"launcher", params:{}}]; render(); }
 
 /* PWA: register the offline cache when hosted on its own site (the artifact viewer blocks service workers). */
 if("serviceWorker" in navigator){ navigator.serviceWorker.register("sw.js").catch(() => {}); }
